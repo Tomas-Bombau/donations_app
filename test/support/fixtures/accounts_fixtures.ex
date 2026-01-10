@@ -14,7 +14,10 @@ defmodule AppDonation.AccountsFixtures do
 
   def valid_user_attributes(attrs \\ %{}) do
     Enum.into(attrs, %{
-      email: unique_user_email()
+      email: unique_user_email(),
+      first_name: "Test",
+      last_name: "User",
+      role: :donor
     })
   end
 
@@ -32,12 +35,28 @@ defmodule AppDonation.AccountsFixtures do
 
     token =
       extract_user_token(fn url ->
-        Accounts.deliver_login_instructions(user, url)
+        Accounts.deliver_confirmation_instructions(user, url)
       end)
 
-    {:ok, {user, _expired_tokens}} =
-      Accounts.login_user_by_magic_link(token)
+    {:ok, user} = Accounts.confirm_user_by_token(token)
 
+    user
+  end
+
+  def admin_user_fixture(attrs \\ %{}) do
+    attrs
+    |> Map.put(:role, :super_admin)
+    |> user_fixture()
+  end
+
+  def organization_user_fixture(attrs \\ %{}) do
+    user =
+      attrs
+      |> Map.put(:role, :organization)
+      |> user_fixture()
+
+    # Approve the organization user
+    {:ok, user} = Accounts.approve_user(user)
     user
   end
 
@@ -72,8 +91,8 @@ defmodule AppDonation.AccountsFixtures do
     )
   end
 
-  def generate_user_magic_link_token(user) do
-    {encoded_token, user_token} = Accounts.UserToken.build_email_token(user, "login")
+  def generate_user_confirmation_token(user) do
+    {encoded_token, user_token} = Accounts.UserToken.build_email_token(user, "confirm")
     AppDonation.Repo.insert!(user_token)
     {encoded_token, user_token.token}
   end

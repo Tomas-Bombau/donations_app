@@ -12,46 +12,31 @@ defmodule AppDonationWeb.UserSessionController do
     render(conn, :new, form: form)
   end
 
-  # magic link login
-  def create(conn, %{"user" => %{"token" => token} = user_params} = params) do
-    info =
-      case params do
-        %{"_action" => "confirmed"} -> "Usuario confirmado exitosamente."
-        _ -> "Bienvenido de nuevo!"
-      end
-
-    case Accounts.login_user_by_magic_link(token) do
-      {:ok, {user, _expired_tokens}} ->
-        if User.needs_admin_approval?(user) do
-          conn
-          |> put_flash(:error, "Tu cuenta esta pendiente de aprobacion por un administrador.")
-          |> render(:new, form: Phoenix.Component.to_form(%{}, as: "user"))
-        else
-          conn
-          |> put_flash(:info, info)
-          |> UserAuth.log_in_user(user, user_params)
-        end
-
-      {:error, :not_found} ->
-        conn
-        |> put_flash(:error, "El enlace es invalido o ha expirado.")
-        |> render(:new, form: Phoenix.Component.to_form(%{}, as: "user"))
-    end
-  end
-
   # email + password login
   def create(conn, %{"user" => %{"email" => email, "password" => password} = user_params}) do
     if user = Accounts.get_user_by_email_and_password(email, password) do
-      if User.needs_admin_approval?(user) do
-        form = Phoenix.Component.to_form(user_params, as: "user")
+      form = Phoenix.Component.to_form(user_params, as: "user")
 
-        conn
-        |> put_flash(:error, "Tu cuenta esta pendiente de aprobacion por un administrador.")
-        |> render(:new, form: form)
-      else
-        conn
-        |> put_flash(:info, "Bienvenido de nuevo!")
-        |> UserAuth.log_in_user(user, user_params)
+      cond do
+        is_nil(user.confirmed_at) ->
+          conn
+          |> put_flash(
+            :error,
+            "Debes confirmar tu email antes de iniciar sesion. " <>
+              "<a href=\"/users/confirm\" class=\"underline\">Reenviar email de confirmacion</a>"
+            |> Phoenix.HTML.raw()
+          )
+          |> render(:new, form: form)
+
+        User.needs_admin_approval?(user) ->
+          conn
+          |> put_flash(:error, "Tu cuenta esta pendiente de aprobacion por un administrador.")
+          |> render(:new, form: form)
+
+        true ->
+          conn
+          |> put_flash(:info, "Bienvenido de nuevo!")
+          |> UserAuth.log_in_user(user, user_params)
       end
     else
       form = Phoenix.Component.to_form(user_params, as: "user")
@@ -60,38 +45,6 @@ defmodule AppDonationWeb.UserSessionController do
       conn
       |> put_flash(:error, "Email o contrasena invalidos")
       |> render(:new, form: form)
-    end
-  end
-
-  # magic link request
-  def create(conn, %{"user" => %{"email" => email}}) do
-    if user = Accounts.get_user_by_email(email) do
-      Accounts.deliver_login_instructions(
-        user,
-        &url(~p"/users/log-in/#{&1}")
-      )
-    end
-
-    info =
-      "Si tu email esta en nuestro sistema, recibiras instrucciones para iniciar sesion en breve."
-
-    conn
-    |> put_flash(:info, info)
-    |> redirect(to: ~p"/users/log-in")
-  end
-
-  def confirm(conn, %{"token" => token}) do
-    if user = Accounts.get_user_by_magic_link_token(token) do
-      form = Phoenix.Component.to_form(%{"token" => token}, as: "user")
-
-      conn
-      |> assign(:user, user)
-      |> assign(:form, form)
-      |> render(:confirm)
-    else
-      conn
-      |> put_flash(:error, "El enlace magico es invalido o ha expirado.")
-      |> redirect(to: ~p"/users/log-in")
     end
   end
 

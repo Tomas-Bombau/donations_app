@@ -16,15 +16,15 @@ defmodule AppDonationWeb.UserRegistrationController do
     case Accounts.register_user(user_params) do
       {:ok, user} ->
         {:ok, _} =
-          Accounts.deliver_login_instructions(
+          Accounts.deliver_confirmation_instructions(
             user,
-            &url(~p"/users/log-in/#{&1}")
+            &url(~p"/users/confirm/#{&1}")
           )
 
         conn
         |> put_flash(
           :info,
-          "An email was sent to #{user.email}, please access it to confirm your account."
+          "Se envio un email a #{user.email}. Por favor confirma tu cuenta para poder iniciar sesion."
         )
         |> redirect(to: ~p"/users/log-in")
 

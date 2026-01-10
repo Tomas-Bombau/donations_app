@@ -128,14 +128,18 @@ defmodule AppDonation.Accounts.User do
   end
 
   defp validate_password(changeset, opts) do
-    changeset
-    |> validate_required([:password])
-    |> validate_length(:password, min: 12, max: 72)
-    # Examples of additional password validation:
-    # |> validate_format(:password, ~r/[a-z]/, message: "at least one lower case character")
-    # |> validate_format(:password, ~r/[A-Z]/, message: "at least one upper case character")
-    # |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/, message: "at least one digit or punctuation character")
-    |> maybe_hash_password(opts)
+    # Password is optional for magic link registration
+    if get_change(changeset, :password) do
+      changeset
+      |> validate_length(:password, min: 12, max: 72)
+      # Examples of additional password validation:
+      # |> validate_format(:password, ~r/[a-z]/, message: "at least one lower case character")
+      # |> validate_format(:password, ~r/[A-Z]/, message: "at least one upper case character")
+      # |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/, message: "at least one digit or punctuation character")
+      |> maybe_hash_password(opts)
+    else
+      changeset
+    end
   end
 
   defp maybe_hash_password(changeset, opts) do
@@ -164,11 +168,19 @@ defmodule AppDonation.Accounts.User do
   end
 
   @doc """
-  Approves the user by admin, setting `admin_approved_at`.
+  Approves the user by admin, setting `admin_approved_at` and `confirmed_at`.
   """
   def admin_approve_changeset(user) do
     now = DateTime.utc_now(:second)
-    change(user, admin_approved_at: now)
+
+    changes =
+      if is_nil(user.confirmed_at) do
+        %{admin_approved_at: now, confirmed_at: now}
+      else
+        %{admin_approved_at: now}
+      end
+
+    change(user, changes)
   end
 
   @doc """

@@ -6,7 +6,8 @@ defmodule AppDonation.Repo.Migrations.CreateInitialSchema do
     execute "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"", ""
 
     execute "CREATE TYPE user_role AS ENUM ('donor', 'organization', 'super_admin')", "DROP TYPE user_role"
-    execute "CREATE TYPE request_status AS ENUM ('draft', 'active', 'funded', 'completed', 'cancelled')", "DROP TYPE request_status"
+    execute "CREATE TYPE request_status AS ENUM ('draft', 'active', 'completed')", "DROP TYPE request_status"
+    execute "CREATE TYPE donation_status AS ENUM ('pending', 'completed', 'cancelled')", "DROP TYPE donation_status"
 
     create table(:users, primary_key: false) do
       add :id, :uuid, primary_key: true, default: fragment("uuid_generate_v4()")
@@ -45,7 +46,7 @@ defmodule AppDonation.Repo.Migrations.CreateInitialSchema do
       add :id, :uuid, primary_key: true, default: fragment("uuid_generate_v4()")
       add :organization_role, :string, null: false
       add :organization_name, :string, null: false
-      add :address, :string, null: false
+      add :address, :string  # Nullable - completed by admin later
       add :province, :string
       add :municipality, :string
       add :lat, :float
@@ -53,6 +54,12 @@ defmodule AppDonation.Repo.Migrations.CreateInitialSchema do
       add :has_legal_entity, :boolean, default: false
       add :cbu, :string
       add :payment_alias, :string
+      add :image_path, :string
+      add :facebook, :string
+      add :instagram, :string
+      add :activities, :text
+      add :audience, :string
+      add :reach, :string
 
       add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
 
@@ -82,7 +89,7 @@ defmodule AppDonation.Repo.Migrations.CreateInitialSchema do
       add :reference_links, {:array, :string}, default: []
       add :deadline, :date, null: false
       add :status, :request_status, null: false, default: "draft"
-      add :funded_amount, :decimal, default: 0, precision: 12, scale: 2
+      add :amount_raised, :decimal, default: 0, precision: 10, scale: 2, null: false
 
       timestamps(type: :utc_datetime)
     end
@@ -90,5 +97,19 @@ defmodule AppDonation.Repo.Migrations.CreateInitialSchema do
     create index(:requests, [:organization_id])
     create index(:requests, [:category_id])
     create index(:requests, [:status])
+
+    create table(:donations, primary_key: false) do
+      add :id, :uuid, primary_key: true, default: fragment("uuid_generate_v4()")
+      add :donor_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
+      add :request_id, references(:requests, type: :uuid, on_delete: :restrict), null: false
+      add :amount, :decimal, null: false, precision: 12, scale: 2
+      add :status, :donation_status, null: false, default: "pending"
+
+      timestamps(type: :utc_datetime)
+    end
+
+    create index(:donations, [:donor_id])
+    create index(:donations, [:request_id])
+    create index(:donations, [:status])
   end
 end

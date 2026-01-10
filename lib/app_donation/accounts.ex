@@ -211,10 +211,11 @@ defmodule AppDonation.Accounts do
   end
 
   @doc """
-  Gets the user with the given magic link token.
+  Gets the user with the given email confirmation token.
+  Returns the user if the token is valid, nil otherwise.
   """
-  def get_user_by_magic_link_token(token) do
-    with {:ok, query} <- UserToken.verify_magic_link_token_query(token),
+  def get_user_by_confirmation_token(token) do
+    with {:ok, query} <- UserToken.verify_email_confirmation_token_query(token),
          {user, _token} <- Repo.one(query) do
       user
     else
@@ -223,48 +224,33 @@ defmodule AppDonation.Accounts do
   end
 
   @doc """
-  Logs the user in by magic link.
+  Confirms the user's email by token.
 
-  There are three cases to consider:
-
-  1. The user has already confirmed their email. They are logged in
-     and the magic link is expired.
-
-  2. The user has not confirmed their email and no password is set.
-     In this case, the user gets confirmed, logged in, and all tokens -
-     including session ones - are expired. In theory, no other tokens
-     exist but we delete all of them for best security practices.
-
-  3. The user has not confirmed their email but a password is set.
-     This cannot happen in the default implementation but may be the
-     source of security pitfalls. See the "Mixing magic link and password registration" section of
-     `mix help phx.gen.auth`.
+  If the token is valid and the user is not already confirmed,
+  the user's `confirmed_at` field is set and the token is deleted.
   """
-  def login_user_by_magic_link(token) do
-    {:ok, query} = UserToken.verify_magic_link_token_query(token)
+  def confirm_user_by_token(token) do
+    with {:ok, query} <- UserToken.verify_email_confirmation_token_query(token),
+         {user, token_record} <- Repo.one(query) do
+      Repo.transact(fn ->
+        case user do
+          %User{confirmed_at: nil} ->
+            {:ok, user} =
+              user
+              |> User.confirm_changeset()
+              |> Repo.update()
 
-    case Repo.one(query) do
-      # Prevent session fixation attacks by disallowing magic links for unconfirmed users with password
-      {%User{confirmed_at: nil, hashed_password: hash}, _token} when not is_nil(hash) ->
-        raise """
-        magic link log in is not allowed for unconfirmed users with a password set!
+            Repo.delete!(token_record)
+            {:ok, user}
 
-        This cannot happen with the default implementation, which indicates that you
-        might have adapted the code to a different use case. Please make sure to read the
-        "Mixing magic link and password registration" section of `mix help phx.gen.auth`.
-        """
-
-      {%User{confirmed_at: nil} = user, _token} ->
-        user
-        |> User.confirm_changeset()
-        |> update_user_and_delete_all_tokens()
-
-      {user, token} ->
-        Repo.delete!(token)
-        {:ok, {user, []}}
-
-      nil ->
-        {:error, :not_found}
+          %User{} ->
+            # Already confirmed, just delete the token
+            Repo.delete!(token_record)
+            {:ok, user}
+        end
+      end)
+    else
+      _ -> {:error, :invalid_token}
     end
   end
 
@@ -286,13 +272,13 @@ defmodule AppDonation.Accounts do
   end
 
   @doc """
-  Delivers the magic link login instructions to the given user.
+  Delivers the email confirmation instructions to the given user.
   """
-  def deliver_login_instructions(%User{} = user, magic_link_url_fun)
-      when is_function(magic_link_url_fun, 1) do
-    {encoded_token, user_token} = UserToken.build_email_token(user, "login")
+  def deliver_confirmation_instructions(%User{} = user, confirmation_url_fun)
+      when is_function(confirmation_url_fun, 1) do
+    {encoded_token, user_token} = UserToken.build_email_token(user, "confirm")
     Repo.insert!(user_token)
-    UserNotifier.deliver_login_instructions(user, magic_link_url_fun.(encoded_token))
+    UserNotifier.deliver_confirmation_instructions(user, confirmation_url_fun.(encoded_token))
   end
 
   @doc """

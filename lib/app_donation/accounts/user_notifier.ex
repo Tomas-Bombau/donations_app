@@ -2,7 +2,6 @@ defmodule AppDonation.Accounts.UserNotifier do
   import Swoosh.Email
 
   alias AppDonation.Mailer
-  alias AppDonation.Accounts.User
 
   # Delivers the email using the application mailer.
   defp deliver(recipient, subject, body) do
@@ -39,44 +38,22 @@ defmodule AppDonation.Accounts.UserNotifier do
   end
 
   @doc """
-  Deliver instructions to log in with a magic link.
+  Deliver email confirmation instructions.
   """
-  def deliver_login_instructions(user, url) do
-    case user do
-      %User{confirmed_at: nil} -> deliver_confirmation_instructions(user, url)
-      _ -> deliver_magic_link_instructions(user, url)
-    end
-  end
-
-  defp deliver_magic_link_instructions(user, url) do
-    deliver(user.email, "Log in instructions", """
+  def deliver_confirmation_instructions(user, url) do
+    deliver(user.email, "Confirma tu cuenta", """
 
     ==============================
 
-    Hi #{user.email},
+    Hola #{user.first_name || user.email},
 
-    You can log into your account by visiting the URL below:
+    Podes confirmar tu cuenta haciendo click en el siguiente link:
 
     #{url}
 
-    If you didn't request this email, please ignore this.
+    Este link expira en 48 horas.
 
-    ==============================
-    """)
-  end
-
-  defp deliver_confirmation_instructions(user, url) do
-    deliver(user.email, "Confirmation instructions", """
-
-    ==============================
-
-    Hi #{user.email},
-
-    You can confirm your account by visiting the URL below:
-
-    #{url}
-
-    If you didn't create an account with us, please ignore this.
+    Si no creaste una cuenta, ignora este email.
 
     ==============================
     """)

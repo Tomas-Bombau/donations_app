@@ -1,0 +1,33 @@
+<Layouts.flash_group flash={@flash} />
+
+<main class="px-4 py-20 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-sm space-y-4">
+    <div class="text-center">
+      <.header>
+        <p>Reenviar email de confirmacion</p>
+        <:subtitle>
+          Ingresa tu email y te enviaremos un nuevo link de confirmacion.
+        </:subtitle>
+      </.header>
+    </div>
+
+    <.form :let={f} for={%{}} as={:user} action={~p"/users/confirm"}>
+      <.input
+        field={f[:email]}
+        type="email"
+        label="Email"
+        autocomplete="email"
+        required
+      />
+      <.button class="btn btn-primary w-full">
+        Reenviar email de confirmacion <span aria-hidden="true">→</span>
+      </.button>
+    </.form>
+
+    <p class="text-center text-sm">
+      <.link navigate={~p"/users/log-in"} class="font-semibold text-primary hover:underline">
+        Volver a iniciar sesion
+      </.link>
+    </p>
+  </div>
+</main>
