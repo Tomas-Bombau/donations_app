@@ -1,18 +1,88 @@
 # AppDonation
 
-To start your Phoenix server:
+A donation crowdfunding platform built with Phoenix LiveView, designed for organizations in Argentina (Buenos Aires and CABA) to create fundraising campaigns and connect with donors.
 
-* Run `mix setup` to install and setup dependencies
-* Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+## Features
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+**For Organizations:**
+- Create and manage donation requests with funding goals and deadlines
+- Track donation progress in real-time
+- Configure payment information (CBU or payment alias)
+- Automatic request completion when funding goals are reached
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+**For Donors:**
+- Browse active donation requests by category and location
+- Make contributions to campaigns
+- Track personal donation history
 
-## Learn more
+**For Administrators:**
+- Approve new organization registrations
+- Manage categories, organizations, and donors
+- View platform metrics
 
-* Official website: https://www.phoenixframework.org/
-* Guides: https://hexdocs.pm/phoenix/overview.html
-* Docs: https://hexdocs.pm/phoenix
-* Forum: https://elixirforum.com/c/phoenix-forum
-* Source: https://github.com/phoenixframework/phoenix
+## Tech Stack
+
+- **Elixir** ~> 1.15
+- **Phoenix** ~> 1.8.3
+- **Phoenix LiveView** ~> 1.1.0
+- **PostgreSQL** with UUID primary keys
+- **Tailwind CSS** for styling
+
+## Getting Started
+
+### Prerequisites
+
+- Elixir 1.15+
+- PostgreSQL
+- Node.js (for assets)
+
+### Installation
+
+1. Install dependencies:
+   ```bash
+   mix setup
+   ```
+
+2. Start the Phoenix server:
+   ```bash
+   mix phx.server
+   ```
+
+3. Visit [`localhost:4000`](http://localhost:4000) in your browser.
+
+### Running Tests
+
+```bash
+mix test
+```
+
+## Project Structure
+
+```
+lib/
+├── app_donation/           # Business logic contexts
+│   ├── accounts/           # User authentication & management
+│   ├── organizations/      # Organization profiles
+│   ├── requests/           # Donation requests
+│   ├── donations/          # Donation tracking
+│   └── catalog/            # Categories
+└── app_donation_web/       # Web layer
+    ├── controllers/        # Traditional controllers
+    ├── live/               # LiveView components
+    │   ├── admin/          # Admin dashboard
+    │   ├── donor/          # Donor interface
+    │   └── organization/   # Organization interface
+    └── components/         # Shared UI components
+```
+
+## User Roles
+
+| Role | Description |
+|------|-------------|
+| `donor` | Can browse requests and make donations |
+| `organization` | Can create donation requests (requires admin approval) |
+| `super_admin` | Full platform management access |
+
+## Deployment
+
+See the [Phoenix deployment guides](https://hexdocs.pm/phoenix/deployment.html) for production setup.
