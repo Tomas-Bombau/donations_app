@@ -63,23 +63,27 @@
         <%= for request <- @requests do %>
           <div class="card bg-base-200 shadow-sm">
             <div class="card-body py-4 px-4">
-              <div class="flex justify-between items-start gap-4">
-                <.link navigate={~p"/donor/requests/#{request}"} class="flex-1 min-w-0">
-                  <p class="text-sm text-base-content/60">{request.organization.organization_name}</p>
-                  <h3 class="font-semibold truncate">{request.title}</h3>
-                  <div class="text-sm text-base-content/60 mt-1 flex flex-wrap gap-x-3 gap-y-1">
-                    <span class="badge badge-ghost badge-sm">{request.category.name}</span>
-                    <span>Vence: {format_date(request.deadline)}</span>
-                    <span>Meta: {format_currency(request.amount)}</span>
-                  </div>
-                </.link>
-                <.link
-                  navigate={~p"/donor/requests/#{request}"}
-                  class="btn btn-primary btn-sm shrink-0"
-                >
-                  Donar
-                </.link>
+              <!-- Header: Vence + Donar arriba a la derecha -->
+              <div class="flex justify-between items-center">
+                <p class="text-sm text-base-content/60">{request.organization.organization_name}</p>
+                <div class="flex items-center gap-3">
+                  <span class="text-sm text-base-content/60">Vence: {format_date(request.deadline)}</span>
+                  <.link
+                    navigate={~p"/donor/requests/#{request}"}
+                    class="btn btn-primary btn-sm"
+                  >
+                    Donar
+                  </.link>
+                </div>
               </div>
+              <.link navigate={~p"/donor/requests/#{request}"} class="block">
+                <!-- Título + Categoría en la misma línea -->
+                <div class="flex items-center gap-2">
+                  <h3 class="font-bold text-lg">{request.title}</h3>
+                  <span class="badge badge-ghost badge-sm">{request.category.name}</span>
+                </div>
+                <p class="text-sm text-base-content/70 mt-2 line-clamp-2">{request.description}</p>
+              </.link>
               <!-- Progress bar -->
               <div class="mt-3">
                 <div class="flex justify-between text-xs mb-1">
