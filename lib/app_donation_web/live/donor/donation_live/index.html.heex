@@ -22,9 +22,7 @@
 
     <%= if @donations == [] do %>
       <div class="text-center py-12 text-base-content/60">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <.icon name="hero-currency-dollar" class="h-16 w-16 mx-auto mb-4 opacity-50" />
         <p class="text-lg">No has realizado donaciones</p>
         <p class="text-sm mt-2">Explora los pedidos activos para comenzar a donar</p>
         <.link navigate={~p"/donor/requests"} class="btn btn-primary btn-sm mt-4">
@@ -62,9 +60,7 @@
         <div class="flex justify-center items-center gap-2 mt-8">
           <%= if @page > 1 do %>
             <.link patch={build_pagination_path(@page - 1)} class="btn btn-sm btn-ghost">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-              </svg>
+              <.icon name="hero-chevron-left" class="h-5 w-5" />
             </.link>
           <% end %>
 
@@ -79,9 +75,7 @@
 
           <%= if @page < @total_pages do %>
             <.link patch={build_pagination_path(@page + 1)} class="btn btn-sm btn-ghost">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
+              <.icon name="hero-chevron-right" class="h-5 w-5" />
             </.link>
           <% end %>
         </div>

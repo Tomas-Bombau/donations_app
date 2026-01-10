@@ -46,6 +46,22 @@ defmodule AppDonation.Accounts.User do
   end
 
   @doc """
+  A user changeset for organization registration with phone required.
+  """
+  def organization_registration_changeset(user, attrs, opts \\ []) do
+    user
+    |> cast(attrs, [:email, :password, :first_name, :last_name, :phone, :role])
+    |> validate_required([:first_name, :last_name, :phone, :role])
+    |> validate_length(:first_name, min: 1, max: 100)
+    |> validate_length(:last_name, min: 1, max: 100)
+    |> validate_format(:phone, ~r/^[\d\s\-\+\(\)]*$/, message: "formato de telefono invalido")
+    |> validate_inclusion(:role, [:donor, :organization, :super_admin])
+    |> validate_email(opts)
+    |> validate_confirmation(:password, message: "las contrasenas no coinciden")
+    |> validate_password(opts)
+  end
+
+  @doc """
   A user changeset for registering or changing the email.
 
   It requires the email to change otherwise an error is added.

@@ -4,20 +4,7 @@
   <div class="mx-auto max-w-2xl">
     <div class="flex items-center gap-4 mb-8">
       <.link navigate={~p"/organization/requests/#{@request}"} class="btn btn-ghost btn-sm btn-circle">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
+        <.icon name="hero-chevron-left" class="h-5 w-5" />
       </.link>
       <h1 class="text-2xl font-bold">Editar pedido</h1>
     </div>
@@ -177,9 +164,7 @@
                     phx-value-index={index}
                     class="btn btn-ghost btn-square"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <.icon name="hero-x-mark" class="h-5 w-5" />
                   </button>
                 </div>
               <% end %>
@@ -190,9 +175,7 @@
               phx-click="add_link"
               class="btn btn-ghost btn-sm mt-2"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-              </svg>
+              <.icon name="hero-plus" class="h-4 w-4 mr-1" />
               Agregar link
             </button>
 

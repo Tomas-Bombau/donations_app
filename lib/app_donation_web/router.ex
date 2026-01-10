@@ -104,7 +104,8 @@ defmodule AppDonationWeb.Router do
 
     live_session :organization,
       on_mount: [{AppDonationWeb.UserAuth, :organization}] do
-      live "/profile", ProfileLive, :edit
+      live "/profile", ProfileLive, :show
+      live "/settings", SettingsLive, :edit
       live "/requests", RequestLive.Index, :index
       live "/requests/new", RequestLive.New, :new
       live "/requests/:id", RequestLive.Show, :show
@@ -121,7 +122,6 @@ defmodule AppDonationWeb.Router do
       live "/requests", RequestLive.Index, :index
       live "/requests/:id", RequestLive.Show, :show
       live "/donations", DonationLive.Index, :index
-      live "/profile", ProfileLive, :edit
     end
   end
 end

@@ -8,7 +8,7 @@ defmodule AppDonationWeb.Organization.ProfileLive do
 
     {:ok,
      socket
-     |> assign(:page_title, "Mi Perfil")
+     |> assign(:page_title, "Mi Organizacion")
      |> assign(:user, user)
      |> assign(:organization, organization)}
   end

@@ -188,7 +188,7 @@ defmodule AppDonationWeb.UserAuth do
       conn
     else
       conn
-      |> put_flash(:error, "You must re-authenticate to access this page.")
+      |> put_flash(:error, "Debes re-autenticarte para acceder a esta pagina.")
       |> maybe_store_return_to()
       |> Phoenix.Controller.redirect(to: ~p"/users/log-in")
       |> halt()
@@ -221,7 +221,7 @@ defmodule AppDonationWeb.UserAuth do
       conn
     else
       conn
-      |> put_flash(:error, "You must log in to access this page.")
+      |> put_flash(:error, "Debes iniciar sesion para acceder a esta pagina.")
       |> maybe_store_return_to()
       |> Phoenix.Controller.redirect(to: ~p"/users/log-in")
       |> halt()
@@ -244,7 +244,7 @@ defmodule AppDonationWeb.UserAuth do
       conn
     else
       conn
-      |> put_flash(:error, "You don't have permission to access this page.")
+      |> put_flash(:error, "No tienes permiso para acceder a esta pagina.")
       |> Phoenix.Controller.redirect(to: ~p"/")
       |> halt()
     end
@@ -293,7 +293,7 @@ defmodule AppDonationWeb.UserAuth do
     else
       socket =
         socket
-        |> Phoenix.LiveView.put_flash(:error, "You don't have permission to access this page.")
+        |> Phoenix.LiveView.put_flash(:error, "No tienes permiso para acceder a esta pagina.")
         |> Phoenix.LiveView.redirect(to: ~p"/")
 
       {:halt, socket}
@@ -308,7 +308,7 @@ defmodule AppDonationWeb.UserAuth do
     else
       socket =
         socket
-        |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
+        |> Phoenix.LiveView.put_flash(:error, "Debes iniciar sesion para acceder a esta pagina.")
         |> Phoenix.LiveView.redirect(to: ~p"/users/log-in")
 
       {:halt, socket}

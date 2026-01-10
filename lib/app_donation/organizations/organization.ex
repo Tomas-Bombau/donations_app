@@ -42,6 +42,12 @@ defmodule AppDonation.Organizations.Organization do
     field :municipality, :string
     field :cbu, :string
     field :payment_alias, :string
+    field :image_path, :string
+    field :facebook, :string
+    field :instagram, :string
+    field :activities, :string
+    field :audience, :string
+    field :reach, :string
 
     has_many :requests, AppDonation.Requests.Request
 
@@ -102,11 +108,27 @@ defmodule AppDonation.Organizations.Organization do
   end
 
   @doc """
+  Changeset for organization registration (without address and has_legal_entity).
+  These fields will be completed by admin later.
+  """
+  def registration_changeset(organization, attrs) do
+    organization
+    |> cast(attrs, [:organization_role, :organization_name, :province, :municipality, :user_id])
+    |> validate_required([:organization_role, :organization_name, :province, :user_id])
+    |> validate_inclusion(:organization_role, @organization_roles, message: "debe seleccionar un rol valido")
+    |> validate_inclusion(:province, @provinces, message: "debe seleccionar una provincia valida")
+    |> validate_municipality()
+    |> validate_length(:organization_name, max: 200)
+    |> unique_constraint(:user_id)
+    |> foreign_key_constraint(:user_id)
+  end
+
+  @doc """
   Changeset for updating profile (including payment info).
   """
   def profile_changeset(organization, attrs) do
     organization
-    |> cast(attrs, [:organization_name, :address, :province, :municipality, :has_legal_entity, :cbu, :payment_alias])
+    |> cast(attrs, [:organization_name, :address, :province, :municipality, :has_legal_entity, :cbu, :payment_alias, :facebook, :instagram])
     |> validate_required([:organization_name, :address, :province])
     |> validate_inclusion(:province, @provinces, message: "debe seleccionar una provincia valida")
     |> validate_municipality()
@@ -116,11 +138,19 @@ defmodule AppDonation.Organizations.Organization do
   end
 
   @doc """
+  Changeset for organization to update only social media fields.
+  """
+  def social_changeset(organization, attrs) do
+    organization
+    |> cast(attrs, [:facebook, :instagram])
+  end
+
+  @doc """
   Changeset for admin to update all organization fields including payment.
   """
   def admin_changeset(organization, attrs) do
     organization
-    |> cast(attrs, [:organization_role, :organization_name, :address, :province, :municipality, :has_legal_entity, :cbu, :payment_alias])
+    |> cast(attrs, [:organization_role, :organization_name, :address, :province, :municipality, :has_legal_entity, :cbu, :payment_alias, :image_path, :facebook, :instagram, :activities, :audience, :reach])
     |> validate_required([:organization_role, :organization_name, :address, :province])
     |> validate_inclusion(:organization_role, @organization_roles, message: "debe seleccionar un rol valido")
     |> validate_inclusion(:province, @provinces, message: "debe seleccionar una provincia valida")

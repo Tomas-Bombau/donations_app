@@ -17,6 +17,15 @@ defmodule AppDonation.Organizations do
   end
 
   @doc """
+  Registers a new organization (without address and has_legal_entity).
+  """
+  def register_organization(attrs) do
+    %Organization{}
+    |> Organization.registration_changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
   Updates an organization profile.
   """
   def update_organization(%Organization{} = organization, attrs) do
@@ -53,5 +62,21 @@ defmodule AppDonation.Organizations do
   """
   def change_organization(%Organization{} = organization, attrs \\ %{}) do
     Organization.changeset(organization, attrs)
+  end
+
+  @doc """
+  Returns a changeset for tracking social media changes.
+  """
+  def change_organization_social(%Organization{} = organization, attrs \\ %{}) do
+    Organization.social_changeset(organization, attrs)
+  end
+
+  @doc """
+  Updates organization social media fields only.
+  """
+  def update_organization_social(%Organization{} = organization, attrs) do
+    organization
+    |> Organization.social_changeset(attrs)
+    |> Repo.update()
   end
 end

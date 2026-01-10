@@ -47,8 +47,9 @@
                 <.input
                   field={f[:phone]}
                   type="tel"
-                  label="Telefono (opcional)"
+                  label="Telefono"
                   autocomplete="tel"
+                  required
                 />
               </div>
             </div>
@@ -238,25 +239,6 @@
                   </select>
               </div>
 
-              <.input
-                name="organization[address]"
-                type="text"
-                label="Direccion"
-                value={@org_changeset.changes[:address]}
-                required
-              />
-
-              <div class="form-control">
-                <label class="label cursor-pointer justify-start gap-4">
-                  <input
-                    type="checkbox"
-                    name="organization[has_legal_entity]"
-                    value="true"
-                    class="checkbox checkbox-primary"
-                  />
-                  <span class="label-text">La organizacion tiene personeria juridica</span>
-                </label>
-              </div>
             </div>
           </div>
 

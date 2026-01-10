@@ -22,9 +22,9 @@ defmodule AppDonationWeb.OrganizationRegistrationController do
     user_params = Map.put(user_params, "role", "organization")
 
     Repo.transaction(fn ->
-      with {:ok, user} <- Accounts.register_user(user_params),
+      with {:ok, user} <- Accounts.register_organization_user(user_params),
            org_params <- Map.put(org_params, "user_id", user.id),
-           {:ok, _org} <- Organizations.create_organization(org_params) do
+           {:ok, _org} <- Organizations.register_organization(org_params) do
         user
       else
         {:error, changeset} ->

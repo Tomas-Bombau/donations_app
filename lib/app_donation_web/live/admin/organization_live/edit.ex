@@ -6,7 +6,13 @@ defmodule AppDonationWeb.Admin.OrganizationLive.Edit do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, socket}
+    {:ok,
+     socket
+     |> allow_upload(:image,
+       accept: ~w(.jpg .jpeg .png .webp),
+       max_entries: 1,
+       max_file_size: 5_000_000
+     )}
   end
 
   @impl true
@@ -27,7 +33,12 @@ defmodule AppDonationWeb.Admin.OrganizationLive.Edit do
         "municipality" => org.municipality,
         "has_legal_entity" => org.has_legal_entity,
         "cbu" => org.cbu,
-        "payment_alias" => org.payment_alias
+        "payment_alias" => org.payment_alias,
+        "facebook" => org.facebook,
+        "instagram" => org.instagram,
+        "activities" => org.activities,
+        "audience" => org.audience,
+        "reach" => org.reach
       }
       |> to_form(as: "organization")
 
@@ -59,11 +70,19 @@ defmodule AppDonationWeb.Admin.OrganizationLive.Edit do
   end
 
   @impl true
+  def handle_event("cancel_upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :image, ref)}
+  end
+
+  @impl true
   def handle_event("save", %{"user" => user_params, "organization" => org_params}, socket) do
     user = socket.assigns.user
 
     # Handle has_legal_entity checkbox
     org_params = Map.put(org_params, "has_legal_entity", org_params["has_legal_entity"] == "true")
+
+    # Handle image upload
+    org_params = maybe_upload_image(socket, org_params, user.organization)
 
     case Accounts.update_organization(user, user_params, org_params) do
       {:ok, _updated_user} ->
@@ -76,4 +95,40 @@ defmodule AppDonationWeb.Admin.OrganizationLive.Edit do
         {:noreply, put_flash(socket, :error, "Error al actualizar la organizacion.")}
     end
   end
+
+  defp maybe_upload_image(socket, org_params, organization) do
+    case uploaded_entries(socket, :image) do
+      {[_ | _], []} ->
+        # There are completed uploads
+        uploaded_files =
+          consume_uploaded_entries(socket, :image, fn %{path: path}, entry ->
+            # Ensure uploads directory exists
+            uploads_dir = Path.expand("./uploads/organizations")
+            File.mkdir_p!(uploads_dir)
+
+            # Generate unique filename using organization id
+            ext = Path.extname(entry.client_name)
+            filename = "#{organization.id}#{ext}"
+            dest = Path.join(uploads_dir, filename)
+
+            # Copy the file
+            File.cp!(path, dest)
+
+            {:ok, "/uploads/organizations/#{filename}"}
+          end)
+
+        case uploaded_files do
+          [image_path | _] -> Map.put(org_params, "image_path", image_path)
+          _ -> org_params
+        end
+
+      _ ->
+        org_params
+    end
+  end
+
+  defp error_to_string(:too_large), do: "El archivo es muy grande (max 5MB)"
+  defp error_to_string(:not_accepted), do: "Tipo de archivo no permitido. Solo JPG, PNG o WebP"
+  defp error_to_string(:too_many_files), do: "Solo se permite un archivo"
+  defp error_to_string(_), do: "Error al subir el archivo"
 end

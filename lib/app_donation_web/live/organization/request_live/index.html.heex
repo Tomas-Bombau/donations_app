@@ -47,20 +47,7 @@
 
     <%= if @requests == [] do %>
       <div class="text-center py-12 text-base-content/60">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-16 w-16 mx-auto mb-4 opacity-50"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-          />
-        </svg>
+        <.icon name="hero-clipboard-document-list" class="h-16 w-16 mx-auto mb-4 opacity-50" />
         <p class="text-lg">No hay pedidos</p>
         <%= if @can_create == :yes do %>
           <p class="text-sm mt-2">Crea tu primer pedido de donacion</p>
@@ -79,15 +66,11 @@
                   <h3 class="font-semibold truncate">{request.title}</h3>
                   <div class="text-sm text-base-content/60 mt-1 flex flex-wrap gap-x-3 gap-y-1">
                     <span class="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                      </svg>
+                      <.icon name="hero-tag" class="h-4 w-4" />
                       {request.category.name}
                     </span>
                     <span class="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                      <.icon name="hero-calendar" class="h-4 w-4" />
                       {format_date(request.deadline)}
                     </span>
                   </div>
@@ -118,9 +101,7 @@
         <div class="flex justify-center items-center gap-2 mt-8">
           <%= if @page > 1 do %>
             <.link patch={build_path(@status, @page - 1)} class="btn btn-sm btn-ghost">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-              </svg>
+              <.icon name="hero-chevron-left" class="h-5 w-5" />
             </.link>
           <% end %>
 
@@ -135,9 +116,7 @@
 
           <%= if @page < @total_pages do %>
             <.link patch={build_path(@status, @page + 1)} class="btn btn-sm btn-ghost">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
+              <.icon name="hero-chevron-right" class="h-5 w-5" />
             </.link>
           <% end %>
         </div>

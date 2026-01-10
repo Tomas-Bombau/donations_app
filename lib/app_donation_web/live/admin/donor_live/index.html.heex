@@ -4,9 +4,7 @@
   <div class="mx-auto max-w-4xl">
     <div class="flex items-center gap-4 mb-8">
       <.link navigate={~p"/admin"} class="btn btn-ghost btn-sm btn-circle">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
+        <.icon name="hero-chevron-left" class="h-5 w-5" />
       </.link>
       <h1 class="text-2xl font-bold">Donantes</h1>
     </div>
@@ -28,9 +26,7 @@
 
     <%= if @donors == [] do %>
       <div class="text-center py-12 text-base-content/60">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
+        <.icon name="hero-users" class="h-16 w-16 mx-auto mb-4 opacity-50" />
         <p class="text-lg">
           <%= if @tab == "archived", do: "No hay donantes archivados", else: "No hay donantes registrados" %>
         </p>
@@ -88,9 +84,7 @@
         <div class="flex justify-center items-center gap-2 mt-8">
           <%= if @page > 1 do %>
             <.link patch={build_pagination_path(@tab, @page - 1)} class="btn btn-sm btn-ghost">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-              </svg>
+              <.icon name="hero-chevron-left" class="h-5 w-5" />
             </.link>
           <% end %>
 
@@ -105,9 +99,7 @@
 
           <%= if @page < @total_pages do %>
             <.link patch={build_pagination_path(@tab, @page + 1)} class="btn btn-sm btn-ghost">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
+              <.icon name="hero-chevron-right" class="h-5 w-5" />
             </.link>
           <% end %>
         </div>

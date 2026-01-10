@@ -36,9 +36,7 @@
         <!-- CTA Buttons -->
         <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
           <.link navigate={~p"/users/register"} class="btn btn-primary btn-lg shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
+            <.icon name="hero-heart" class="h-5 w-5 mr-2" />
             Comenzar a donar
           </.link>
           <.link navigate={~p"/organizations/register"} class="btn btn-outline btn-lg hover:bg-base-200 transition-all">
@@ -49,21 +47,15 @@
         <!-- Trust badges -->
         <div class="mt-12 flex items-center gap-6 justify-center lg:justify-start text-base-content/40 text-sm">
           <div class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
+            <.icon name="hero-shield-check" class="h-5 w-5 text-success" />
             100% Seguro
           </div>
           <div class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
+            <.icon name="hero-check" class="h-5 w-5 text-success" />
             Gratuito
           </div>
           <div class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+            <.icon name="hero-bolt" class="h-5 w-5 text-success" />
             Rapido
           </div>
         </div>
@@ -182,36 +174,28 @@
           <div class="grid grid-cols-2 gap-4">
             <div class="bg-base-100 rounded-2xl p-6 shadow-lg">
               <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                <.icon name="hero-magnifying-glass" class="h-6 w-6 text-primary" />
               </div>
               <h4 class="font-bold">Busca</h4>
               <p class="text-sm text-base-content/60 mt-1">Encuentra necesidades</p>
             </div>
             <div class="bg-base-100 rounded-2xl p-6 shadow-lg translate-y-4">
               <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-                </svg>
+                <.icon name="hero-gift" class="h-6 w-6 text-primary" />
               </div>
               <h4 class="font-bold">Dona</h4>
               <p class="text-sm text-base-content/60 mt-1">Objetos o alimentos</p>
             </div>
             <div class="bg-base-100 rounded-2xl p-6 shadow-lg">
               <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <.icon name="hero-check-circle" class="h-6 w-6 text-primary" />
               </div>
               <h4 class="font-bold">Confirma</h4>
               <p class="text-sm text-base-content/60 mt-1">Seguimiento total</p>
             </div>
             <div class="bg-base-100 rounded-2xl p-6 shadow-lg translate-y-4">
               <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <.icon name="hero-face-smile" class="h-6 w-6 text-primary" />
               </div>
               <h4 class="font-bold">Impacta</h4>
               <p class="text-sm text-base-content/60 mt-1">Cambia vidas</p>
@@ -229,9 +213,7 @@
         <ul class="space-y-5">
           <li class="flex items-start gap-4">
             <div class="w-6 h-6 bg-success rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
+              <.icon name="hero-check" class="h-4 w-4 text-white" />
             </div>
             <div>
               <h4 class="font-semibold">Explora pedidos verificados</h4>
@@ -240,9 +222,7 @@
           </li>
           <li class="flex items-start gap-4">
             <div class="w-6 h-6 bg-success rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
+              <.icon name="hero-check" class="h-4 w-4 text-white" />
             </div>
             <div>
               <h4 class="font-semibold">Dona lo que puedas</h4>
@@ -251,9 +231,7 @@
           </li>
           <li class="flex items-start gap-4">
             <div class="w-6 h-6 bg-success rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
+              <.icon name="hero-check" class="h-4 w-4 text-white" />
             </div>
             <div>
               <h4 class="font-semibold">Seguimiento en tiempo real</h4>
@@ -273,9 +251,7 @@
       <!-- Brand -->
       <div class="md:col-span-2">
         <div class="flex items-center gap-2 text-xl font-bold text-primary mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
+          <.icon name="hero-heart" class="h-8 w-8" />
           DonaApp
         </div>
         <p class="text-base-content/60 max-w-sm">

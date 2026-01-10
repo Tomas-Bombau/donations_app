@@ -16,8 +16,8 @@ defmodule AppDonationWeb.UserSessionController do
   def create(conn, %{"user" => %{"token" => token} = user_params} = params) do
     info =
       case params do
-        %{"_action" => "confirmed"} -> "User confirmed successfully."
-        _ -> "Welcome back!"
+        %{"_action" => "confirmed"} -> "Usuario confirmado exitosamente."
+        _ -> "Bienvenido de nuevo!"
       end
 
     case Accounts.login_user_by_magic_link(token) do
@@ -34,7 +34,7 @@ defmodule AppDonationWeb.UserSessionController do
 
       {:error, :not_found} ->
         conn
-        |> put_flash(:error, "The link is invalid or it has expired.")
+        |> put_flash(:error, "El enlace es invalido o ha expirado.")
         |> render(:new, form: Phoenix.Component.to_form(%{}, as: "user"))
     end
   end
@@ -50,7 +50,7 @@ defmodule AppDonationWeb.UserSessionController do
         |> render(:new, form: form)
       else
         conn
-        |> put_flash(:info, "Welcome back!")
+        |> put_flash(:info, "Bienvenido de nuevo!")
         |> UserAuth.log_in_user(user, user_params)
       end
     else
@@ -58,7 +58,7 @@ defmodule AppDonationWeb.UserSessionController do
 
       # In order to prevent user enumeration attacks, don't disclose whether the email is registered.
       conn
-      |> put_flash(:error, "Invalid email or password")
+      |> put_flash(:error, "Email o contrasena invalidos")
       |> render(:new, form: form)
     end
   end
@@ -73,7 +73,7 @@ defmodule AppDonationWeb.UserSessionController do
     end
 
     info =
-      "If your email is in our system, you will receive instructions for logging in shortly."
+      "Si tu email esta en nuestro sistema, recibiras instrucciones para iniciar sesion en breve."
 
     conn
     |> put_flash(:info, info)
@@ -90,14 +90,14 @@ defmodule AppDonationWeb.UserSessionController do
       |> render(:confirm)
     else
       conn
-      |> put_flash(:error, "Magic link is invalid or it has expired.")
+      |> put_flash(:error, "El enlace magico es invalido o ha expirado.")
       |> redirect(to: ~p"/users/log-in")
     end
   end
 
   def delete(conn, _params) do
     conn
-    |> put_flash(:info, "Logged out successfully.")
+    |> put_flash(:info, "Sesion cerrada exitosamente.")
     |> UserAuth.log_out_user()
   end
 end

@@ -3,7 +3,10 @@
 <main class="px-4 py-12 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-2xl">
     <div class="mb-4">
-      <.link navigate={~p"/admin/organizations"} class="text-sm text-base-content/60 hover:text-base-content">
+      <.link
+        navigate={~p"/admin/organizations"}
+        class="text-sm text-base-content/60 hover:text-base-content"
+      >
         &larr; Organizaciones
       </.link>
     </div>
@@ -11,11 +14,28 @@
     <div class="card bg-base-200">
       <div class="card-body">
         <div class="flex justify-between items-start mb-4">
-          <div>
-            <h1 class="text-xl font-bold">
-              <%= if @organization.organization, do: @organization.organization.organization_name, else: "Sin nombre" %>
-            </h1>
-            <p class="text-base-content/60 text-sm"><%= @organization.first_name %> <%= @organization.last_name %> · <%= @organization.email %></p>
+          <div class="flex gap-4">
+            <%= if @organization.organization && @organization.organization.image_path do %>
+              <img
+                src={@organization.organization.image_path}
+                alt="Imagen de la organizacion"
+                class="w-16 h-16 object-cover rounded-lg shrink-0"
+              />
+            <% else %>
+              <div class="w-16 h-16 bg-base-300 rounded-lg flex items-center justify-center shrink-0">
+                <.icon name="hero-building-office" class="h-8 w-8 text-base-content/30" />
+              </div>
+            <% end %>
+            <div>
+              <h1 class="text-xl font-bold">
+                {if @organization.organization,
+                  do: @organization.organization.organization_name,
+                  else: "Sin nombre"}
+              </h1>
+              <p class="text-base-content/60 break-all text-sm">
+                {@organization.first_name} {@organization.last_name} · {@organization.email}
+              </p>
+            </div>
           </div>
           <div class="flex items-center gap-2">
             <%= if @organization.admin_approved_at do %>
@@ -28,69 +48,137 @@
             <% end %>
           </div>
         </div>
-
-        <!-- Contacto -->
+        
+<!-- Contacto -->
         <div class="mb-4">
-          <h3 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide mb-2">Contacto</h3>
+          <h3 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide mb-2">
+            Contacto
+          </h3>
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div>
               <p class="text-xs text-base-content/60">Nombre</p>
-              <p class="font-medium text-sm"><%= @organization.first_name %> <%= @organization.last_name %></p>
+              <p class="font-medium text-sm">
+                {@organization.first_name} {@organization.last_name}
+              </p>
             </div>
             <div>
               <p class="text-xs text-base-content/60">Email</p>
-              <p class="font-medium text-sm"><%= @organization.email %></p>
+              <p class="font-medium text-sm">{@organization.email}</p>
             </div>
             <div>
               <p class="text-xs text-base-content/60">Telefono</p>
-              <p class="font-medium text-sm"><%= @organization.phone || "-" %></p>
+              <p class="font-medium text-sm">{@organization.phone || "-"}</p>
             </div>
           </div>
         </div>
 
         <%= if @organization.organization do %>
           <div class="divider my-2"></div>
-
-          <!-- Organizacion -->
+          
+<!-- Organizacion -->
           <div class="mb-4">
-            <h3 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide mb-2">Organizacion</h3>
+            <h3 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide mb-2">
+              Organizacion
+            </h3>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div>
                 <p class="text-xs text-base-content/60">Nombre</p>
-                <p class="font-medium text-sm"><%= @organization.organization.organization_name %></p>
+                <p class="font-medium text-sm">{@organization.organization.organization_name}</p>
               </div>
               <div>
                 <p class="text-xs text-base-content/60">Rol</p>
-                <p class="font-medium text-sm capitalize"><%= @organization.organization.organization_role %></p>
+                <p class="font-medium text-sm capitalize">
+                  {@organization.organization.organization_role}
+                </p>
               </div>
               <div>
                 <p class="text-xs text-base-content/60">Ubicacion</p>
                 <p class="font-medium text-sm">
-                  <%= @organization.organization.province || "-" %><%= if @organization.organization.municipality, do: ", #{@organization.organization.municipality}", else: "" %>
+                  {@organization.organization.province || "-"}{if @organization.organization.municipality,
+                    do: ", #{@organization.organization.municipality}",
+                    else: ""}
                 </p>
               </div>
-              <div class="col-span-2 sm:col-span-3">
+              <div>
                 <p class="text-xs text-base-content/60">Direccion</p>
-                <p class="font-medium text-sm"><%= @organization.organization.address %></p>
+                <p class="font-medium text-sm">{@organization.organization.address || "-"}</p>
+              </div>
+              <div>
+                <p class="text-xs text-base-content/60">Publico</p>
+                <p class="font-medium text-sm">{@organization.organization.audience || "-"}</p>
+              </div>
+              <div>
+                <p class="text-xs text-base-content/60">Alcance</p>
+                <p class="font-medium text-sm">{@organization.organization.reach || "-"}</p>
+              </div>
+              <div class="col-span-2 sm:col-span-3">
+                <p class="text-xs text-base-content/60">Actividades</p>
+                <p class="font-medium text-sm whitespace-pre-wrap">{@organization.organization.activities || "-"}</p>
               </div>
             </div>
           </div>
 
           <div class="divider my-2"></div>
 
-          <!-- Fechas -->
+<!-- Redes sociales -->
           <div class="mb-4">
-            <h3 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide mb-2">Fechas</h3>
+            <h3 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide mb-2">
+              Redes sociales
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div>
+                <p class="text-xs text-base-content/60">Facebook</p>
+                <p class="font-medium text-sm">{@organization.organization.facebook || "-"}</p>
+              </div>
+              <div>
+                <p class="text-xs text-base-content/60">Instagram</p>
+                <p class="font-medium text-sm">{@organization.organization.instagram || "-"}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider my-2"></div>
+
+<!-- Datos de pago -->
+          <div class="mb-4">
+            <h3 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide mb-2">
+              Datos de pago
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div>
+                <p class="text-xs text-base-content/60">CBU</p>
+                <p class="font-medium text-sm font-mono">
+                  {@organization.organization.cbu || "-"}
+                </p>
+              </div>
+              <div>
+                <p class="text-xs text-base-content/60">Alias Mercado Pago</p>
+                <p class="font-medium text-sm">
+                  {@organization.organization.payment_alias || "-"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider my-2"></div>
+          
+<!-- Fechas -->
+          <div class="mb-4">
+            <h3 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide mb-2">
+              Fechas
+            </h3>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div>
                 <p class="text-xs text-base-content/60">Registrado</p>
-                <p class="font-medium text-sm"><%= Calendar.strftime(@organization.inserted_at, "%Y-%m-%d %H:%M") %></p>
+                <p class="font-medium text-sm">
+                  {Calendar.strftime(@organization.inserted_at, "%Y-%m-%d %H:%M")}
+                </p>
               </div>
               <div>
                 <p class="text-xs text-base-content/60">Confirmado</p>
                 <p class="font-medium text-sm">
                   <%= if @organization.confirmed_at do %>
-                    <%= Calendar.strftime(@organization.confirmed_at, "%Y-%m-%d %H:%M") %>
+                    {Calendar.strftime(@organization.confirmed_at, "%Y-%m-%d %H:%M")}
                   <% else %>
                     -
                   <% end %>
@@ -100,7 +188,7 @@
                 <p class="text-xs text-base-content/60">Aprobado</p>
                 <p class="font-medium text-sm">
                   <%= if @organization.admin_approved_at do %>
-                    <%= Calendar.strftime(@organization.admin_approved_at, "%Y-%m-%d %H:%M") %>
+                    {Calendar.strftime(@organization.admin_approved_at, "%Y-%m-%d %H:%M")}
                   <% else %>
                     -
                   <% end %>

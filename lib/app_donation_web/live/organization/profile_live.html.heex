@@ -11,15 +11,22 @@
     <div class="card bg-base-200">
       <div class="card-body">
         <div class="flex justify-between items-start mb-4">
-          <div>
-            <h1 class="text-xl font-bold"><%= @organization.organization_name %></h1>
-            <p class="text-base-content/60 text-sm"><%= @user.first_name %> <%= @user.last_name %> · <%= @user.email %></p>
-          </div>
-          <div class="flex items-center gap-2">
-            <%= if @organization.has_legal_entity do %>
-              <span class="badge badge-info badge-sm">Personeria juridica</span>
+          <div class="flex gap-4">
+            <%= if @organization.image_path do %>
+              <img src={@organization.image_path} alt="Imagen de la organizacion" class="w-16 h-16 object-cover rounded-lg shrink-0"/>
+            <% else %>
+              <div class="w-16 h-16 bg-base-300 rounded-lg flex items-center justify-center shrink-0">
+                <.icon name="hero-building-office" class="h-8 w-8 text-base-content/30" />
+              </div>
             <% end %>
+            <div>
+              <h1 class="text-xl font-bold"><%= @organization.organization_name %></h1>
+              <p class="text-base-content/60 text-sm"><%= @user.first_name %> <%= @user.last_name %> · <%= @user.email %></p>
+            </div>
           </div>
+          <%= if @organization.has_legal_entity do %>
+            <span class="badge badge-info badge-sm">Personeria juridica</span>
+          <% end %>
         </div>
 
         <!-- Contacto -->
@@ -61,9 +68,38 @@
                 <%= @organization.province || "-" %><%= if @organization.municipality, do: ", #{@organization.municipality}", else: "" %>
               </p>
             </div>
-            <div class="col-span-2 sm:col-span-3">
+            <div>
               <p class="text-xs text-base-content/60">Direccion</p>
-              <p class="font-medium text-sm"><%= @organization.address %></p>
+              <p class="font-medium text-sm"><%= @organization.address || "-" %></p>
+            </div>
+            <div>
+              <p class="text-xs text-base-content/60">Publico</p>
+              <p class="font-medium text-sm"><%= @organization.audience || "-" %></p>
+            </div>
+            <div>
+              <p class="text-xs text-base-content/60">Alcance</p>
+              <p class="font-medium text-sm"><%= @organization.reach || "-" %></p>
+            </div>
+            <div class="col-span-2 sm:col-span-3">
+              <p class="text-xs text-base-content/60">Actividades</p>
+              <p class="font-medium text-sm whitespace-pre-wrap"><%= @organization.activities || "-" %></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider my-2"></div>
+
+        <!-- Redes sociales -->
+        <div class="mb-4">
+          <h3 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide mb-2">Redes sociales</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div>
+              <p class="text-xs text-base-content/60">Facebook</p>
+              <p class="font-medium text-sm"><%= @organization.facebook || "-" %></p>
+            </div>
+            <div>
+              <p class="text-xs text-base-content/60">Instagram</p>
+              <p class="font-medium text-sm"><%= @organization.instagram || "-" %></p>
             </div>
           </div>
         </div>
@@ -71,7 +107,7 @@
         <div class="divider my-2"></div>
 
         <!-- Datos de pago -->
-        <div class="mb-4">
+        <div>
           <h3 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide mb-2">Datos de pago</h3>
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div>

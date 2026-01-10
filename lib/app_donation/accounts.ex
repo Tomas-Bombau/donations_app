@@ -81,6 +81,15 @@ defmodule AppDonation.Accounts do
   end
 
   @doc """
+  Registers an organization user (phone required).
+  """
+  def register_organization_user(attrs) do
+    %User{}
+    |> User.organization_registration_changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for tracking user registration changes.
 
   ## Examples
@@ -488,6 +497,26 @@ defmodule AppDonation.Accounts do
     profile
     |> AppDonation.Organizations.Organization.admin_changeset(attrs)
     |> Repo.insert_or_update()
+  end
+
+  @doc """
+  Returns a changeset for changing donor profile fields (first_name, last_name, phone, email).
+  """
+  def change_donor_profile(%User{} = user, attrs \\ %{}) do
+    user
+    |> Ecto.Changeset.cast(attrs, [:first_name, :last_name, :phone, :email])
+    |> Ecto.Changeset.validate_required([:first_name, :last_name, :email])
+    |> Ecto.Changeset.validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "formato de email invalido")
+    |> Ecto.Changeset.unique_constraint(:email)
+  end
+
+  @doc """
+  Updates a donor's profile (first_name, last_name, phone, email).
+  """
+  def update_donor_profile(%User{} = user, attrs) do
+    user
+    |> change_donor_profile(attrs)
+    |> Repo.update()
   end
 
   @doc """
