@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app_donation_dev
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    ports:
+      - "4000:4000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ecto://postgres:postgres@db/app_donation_dev
+      PHX_HOST: localhost
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-super_secret_key_base_for_development_only_change_in_prod}
+    volumes:
+      - .:/app
+      - deps:/app/deps
+      - build:/app/_build
+    stdin_open: true
+    tty: true
+
+volumes:
+  pgdata:
+  deps:
+  build:

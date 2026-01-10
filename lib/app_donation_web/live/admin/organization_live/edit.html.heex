@@ -1,0 +1,234 @@
+<Layouts.flash_group flash={@flash} />
+
+<main class="px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-2xl">
+    <div class="mb-4">
+      <.link navigate={~p"/admin/organizations"} class="text-sm text-base-content/60 hover:text-base-content">
+        &larr; Organizaciones
+      </.link>
+    </div>
+
+    <h1 class="text-2xl font-bold mb-8">Editar organizacion</h1>
+
+    <form phx-submit="save" phx-change="validate" class="space-y-6">
+      <!-- User Info -->
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h2 class="card-title text-lg mb-4">Datos del contacto</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Nombre</span>
+              </label>
+              <input
+                type="text"
+                name="user[first_name]"
+                value={@user_form[:first_name].value}
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Apellido</span>
+              </label>
+              <input
+                type="text"
+                name="user[last_name]"
+                value={@user_form[:last_name].value}
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Email</span>
+              </label>
+              <input
+                type="email"
+                name="user[email]"
+                value={@user_form[:email].value}
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Telefono</span>
+              </label>
+              <input
+                type="text"
+                name="user[phone]"
+                value={@user_form[:phone].value}
+                class="input input-bordered w-full"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Organization Info -->
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h2 class="card-title text-lg mb-4">Datos de la organizacion</h2>
+
+          <div class="space-y-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Nombre de la organizacion</span>
+              </label>
+              <input
+                type="text"
+                name="organization[organization_name]"
+                value={@org_form[:organization_name].value}
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Rol en la organizacion</span>
+              </label>
+              <select
+                name="organization[organization_role]"
+                class="select select-bordered w-full"
+                required
+              >
+                <option value="" disabled selected={is_nil(@org_form[:organization_role].value)}>
+                  Seleccionar rol
+                </option>
+                <%= for {label, value} <- AppDonation.Organizations.Organization.organization_role_options() do %>
+                  <option value={value} selected={@org_form[:organization_role].value == value}>
+                    {label}
+                  </option>
+                <% end %>
+              </select>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Direccion</span>
+              </label>
+              <input
+                type="text"
+                name="organization[address]"
+                value={@org_form[:address].value}
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Provincia</span>
+                </label>
+                <select
+                  name="organization[province]"
+                  class="select select-bordered w-full"
+                  required
+                >
+                  <option value="" disabled selected={is_nil(@org_form[:province].value)}>
+                    Seleccionar provincia
+                  </option>
+                  <%= for {label, value} <- AppDonation.Organizations.Organization.province_options() do %>
+                    <option value={value} selected={@org_form[:province].value == value}>
+                      {label}
+                    </option>
+                  <% end %>
+                </select>
+              </div>
+
+              <%= if @org_form[:province].value == "Buenos Aires" do %>
+                <div class="form-control">
+                  <label class="label">
+                    <span class="label-text">Municipio</span>
+                  </label>
+                  <select
+                    name="organization[municipality]"
+                    class="select select-bordered w-full"
+                    required
+                  >
+                    <option value="" disabled selected={is_nil(@org_form[:municipality].value) or @org_form[:municipality].value == ""}>
+                      Seleccionar municipio
+                    </option>
+                    <%= for {label, value} <- AppDonation.Organizations.Organization.municipality_options() do %>
+                      <option value={value} selected={@org_form[:municipality].value == value}>
+                        {label}
+                      </option>
+                    <% end %>
+                  </select>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="form-control">
+              <label class="label cursor-pointer justify-start gap-2">
+                <input
+                  type="checkbox"
+                  name="organization[has_legal_entity]"
+                  value="true"
+                  checked={@org_form[:has_legal_entity].value == true}
+                  class="checkbox checkbox-primary"
+                />
+                <span class="label-text">La organizacion tiene personeria juridica</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Info -->
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h2 class="card-title text-lg mb-4">Datos de pago</h2>
+
+          <div class="space-y-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">CBU (22 digitos)</span>
+              </label>
+              <input
+                type="text"
+                name="organization[cbu]"
+                value={@org_form[:cbu].value}
+                maxlength="22"
+                pattern="[0-9]*"
+                inputmode="numeric"
+                class="input input-bordered w-full font-mono"
+                placeholder="0000000000000000000000"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Alias de Mercado Pago</span>
+              </label>
+              <input
+                type="text"
+                name="organization[payment_alias]"
+                value={@org_form[:payment_alias].value}
+                class="input input-bordered w-full"
+                placeholder="mi.alias.mp"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <.link navigate={~p"/admin/organizations"} class="btn btn-ghost">
+          Cancelar
+        </.link>
+        <button type="submit" class="btn btn-primary">
+          Guardar cambios
+        </button>
+      </div>
+    </form>
+  </div>
+</main>

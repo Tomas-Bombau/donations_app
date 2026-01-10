@@ -1,0 +1,120 @@
+<Layouts.flash_group flash={@flash} />
+
+<main class="px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-4xl">
+    <div class="flex items-center gap-4 mb-8">
+      <.link navigate={~p"/admin"} class="btn btn-ghost btn-sm btn-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </.link>
+      <h1 class="text-2xl font-bold">Donantes</h1>
+    </div>
+
+    <div class="flex gap-2 mb-6">
+      <.link
+        patch={~p"/admin/donors?tab=active"}
+        class={["btn btn-sm gap-2", if(@tab == "active", do: "btn-primary", else: "btn-ghost")]}
+      >
+        Activos
+      </.link>
+      <.link
+        patch={~p"/admin/donors?tab=archived"}
+        class={["btn btn-sm gap-2", if(@tab == "archived", do: "btn-primary", else: "btn-ghost")]}
+      >
+        Archivados
+      </.link>
+    </div>
+
+    <%= if @donors == [] do %>
+      <div class="text-center py-12 text-base-content/60">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <p class="text-lg">
+          <%= if @tab == "archived", do: "No hay donantes archivados", else: "No hay donantes registrados" %>
+        </p>
+      </div>
+    <% else %>
+      <div class="space-y-3" id="donors-list">
+        <%= for donor <- @donors do %>
+          <div class="card bg-base-200 shadow-sm hover:bg-base-300 transition-colors">
+            <div class="card-body py-3 px-4">
+              <div class="flex justify-between items-center gap-4">
+                <.link navigate={~p"/admin/donors/#{donor}"} class="flex-1 min-w-0 cursor-pointer">
+                  <h3 class="font-semibold truncate">
+                    <%= donor.first_name %> <%= donor.last_name %>
+                  </h3>
+                  <div class="text-sm text-base-content/60 mt-1">
+                    <span><%= donor.email %></span>
+                    <%= if donor.phone do %>
+                      <span class="mx-1">·</span>
+                      <span><%= donor.phone %></span>
+                    <% end %>
+                    <span class="mx-1">·</span>
+                    <span>Registrado: <%= Calendar.strftime(donor.inserted_at, "%Y-%m-%d") %></span>
+                  </div>
+                </.link>
+                <div class="flex gap-2 shrink-0">
+                  <%= if @tab == "archived" do %>
+                    <button
+                      type="button"
+                      phx-click="unarchive"
+                      phx-value-id={donor.id}
+                      data-confirm="Estas seguro de desarchivar este donante?"
+                      class="btn btn-warning btn-sm"
+                    >
+                      Desarchivar
+                    </button>
+                  <% else %>
+                    <button
+                      type="button"
+                      phx-click="archive"
+                      phx-value-id={donor.id}
+                      data-confirm="Estas seguro de archivar este donante?"
+                      class="btn btn-warning btn-sm"
+                    >
+                      Archivar
+                    </button>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <%= if @total_pages > 1 do %>
+        <div class="flex justify-center items-center gap-2 mt-8">
+          <%= if @page > 1 do %>
+            <.link patch={build_pagination_path(@tab, @page - 1)} class="btn btn-sm btn-ghost">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </.link>
+          <% end %>
+
+          <%= for page_num <- max(1, @page - 2)..min(@total_pages, @page + 2) do %>
+            <.link
+              patch={build_pagination_path(@tab, page_num)}
+              class={["btn btn-sm", if(page_num == @page, do: "btn-primary", else: "btn-ghost")]}
+            >
+              <%= page_num %>
+            </.link>
+          <% end %>
+
+          <%= if @page < @total_pages do %>
+            <.link patch={build_pagination_path(@tab, @page + 1)} class="btn btn-sm btn-ghost">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </.link>
+          <% end %>
+        </div>
+        <p class="text-center text-sm text-base-content/60 mt-2">
+          Mostrando <%= length(@donors) %> de <%= @total_count %> donantes
+        </p>
+      <% end %>
+    <% end %>
+  </div>
+</main>

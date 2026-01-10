@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+
+# Elixir/Mix
+_build
+deps
+*.ez
+
+# Node
+node_modules
+
+# Test artifacts
+/cover
+/test/support/*.beam
+
+# Database files
+*.sqlite*
+*.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+/doc
+
+# Temporary files
+/tmp

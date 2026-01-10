@@ -1,0 +1,128 @@
+<Layouts.flash_group flash={@flash} />
+
+<main class="px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-2xl">
+    <div class="mb-4">
+      <.link navigate={~p"/admin/organizations"} class="text-sm text-base-content/60 hover:text-base-content">
+        &larr; Organizaciones
+      </.link>
+    </div>
+
+    <div class="card bg-base-200">
+      <div class="card-body">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h1 class="text-xl font-bold">
+              <%= if @organization.organization, do: @organization.organization.organization_name, else: "Sin nombre" %>
+            </h1>
+            <p class="text-base-content/60 text-sm"><%= @organization.first_name %> <%= @organization.last_name %> · <%= @organization.email %></p>
+          </div>
+          <div class="flex items-center gap-2">
+            <%= if @organization.admin_approved_at do %>
+              <span class="badge badge-success badge-sm">Aprobada</span>
+            <% else %>
+              <span class="badge badge-warning badge-sm">Pendiente</span>
+            <% end %>
+            <%= if @organization.organization && @organization.organization.has_legal_entity do %>
+              <span class="badge badge-info badge-sm">Personeria juridica</span>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Contacto -->
+        <div class="mb-4">
+          <h3 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide mb-2">Contacto</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div>
+              <p class="text-xs text-base-content/60">Nombre</p>
+              <p class="font-medium text-sm"><%= @organization.first_name %> <%= @organization.last_name %></p>
+            </div>
+            <div>
+              <p class="text-xs text-base-content/60">Email</p>
+              <p class="font-medium text-sm"><%= @organization.email %></p>
+            </div>
+            <div>
+              <p class="text-xs text-base-content/60">Telefono</p>
+              <p class="font-medium text-sm"><%= @organization.phone || "-" %></p>
+            </div>
+          </div>
+        </div>
+
+        <%= if @organization.organization do %>
+          <div class="divider my-2"></div>
+
+          <!-- Organizacion -->
+          <div class="mb-4">
+            <h3 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide mb-2">Organizacion</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div>
+                <p class="text-xs text-base-content/60">Nombre</p>
+                <p class="font-medium text-sm"><%= @organization.organization.organization_name %></p>
+              </div>
+              <div>
+                <p class="text-xs text-base-content/60">Rol</p>
+                <p class="font-medium text-sm capitalize"><%= @organization.organization.organization_role %></p>
+              </div>
+              <div>
+                <p class="text-xs text-base-content/60">Ubicacion</p>
+                <p class="font-medium text-sm">
+                  <%= @organization.organization.province || "-" %><%= if @organization.organization.municipality, do: ", #{@organization.organization.municipality}", else: "" %>
+                </p>
+              </div>
+              <div class="col-span-2 sm:col-span-3">
+                <p class="text-xs text-base-content/60">Direccion</p>
+                <p class="font-medium text-sm"><%= @organization.organization.address %></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider my-2"></div>
+
+          <!-- Fechas -->
+          <div class="mb-4">
+            <h3 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide mb-2">Fechas</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div>
+                <p class="text-xs text-base-content/60">Registrado</p>
+                <p class="font-medium text-sm"><%= Calendar.strftime(@organization.inserted_at, "%Y-%m-%d %H:%M") %></p>
+              </div>
+              <div>
+                <p class="text-xs text-base-content/60">Confirmado</p>
+                <p class="font-medium text-sm">
+                  <%= if @organization.confirmed_at do %>
+                    <%= Calendar.strftime(@organization.confirmed_at, "%Y-%m-%d %H:%M") %>
+                  <% else %>
+                    -
+                  <% end %>
+                </p>
+              </div>
+              <div>
+                <p class="text-xs text-base-content/60">Aprobado</p>
+                <p class="font-medium text-sm">
+                  <%= if @organization.admin_approved_at do %>
+                    <%= Calendar.strftime(@organization.admin_approved_at, "%Y-%m-%d %H:%M") %>
+                  <% else %>
+                    -
+                  <% end %>
+                </p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="divider my-2"></div>
+
+        <div class="flex justify-end">
+          <.link
+            href={~p"/admin/organizations/#{@organization}"}
+            method="delete"
+            data-confirm="Estas seguro de archivar esta organizacion?"
+            class="btn btn-warning btn-sm"
+          >
+            Archivar organizacion
+          </.link>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

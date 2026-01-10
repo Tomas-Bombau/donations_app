@@ -1,0 +1,63 @@
+<Layouts.flash_group flash={@flash} />
+
+<main class="px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-2xl">
+    <div class="mb-4">
+      <.link navigate={~p"/admin/donors"} class="text-sm text-base-content/60 hover:text-base-content">
+        &larr; Donantes
+      </.link>
+    </div>
+
+    <div class="card bg-base-200">
+      <div class="card-body">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h1 class="text-xl font-bold"><%= @donor.first_name %> <%= @donor.last_name %></h1>
+            <p class="text-base-content/60 text-sm"><%= @donor.email %></p>
+          </div>
+          <div class="flex items-center gap-2">
+            <%= if @donor.confirmed_at do %>
+              <span class="badge badge-success badge-sm">Confirmado</span>
+            <% else %>
+              <span class="badge badge-warning badge-sm">Sin confirmar</span>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div>
+            <p class="text-xs text-base-content/60">Telefono</p>
+            <p class="font-medium text-sm"><%= @donor.phone || "-" %></p>
+          </div>
+          <div>
+            <p class="text-xs text-base-content/60">Registrado</p>
+            <p class="font-medium text-sm"><%= Calendar.strftime(@donor.inserted_at, "%Y-%m-%d %H:%M") %></p>
+          </div>
+          <div>
+            <p class="text-xs text-base-content/60">Confirmado</p>
+            <p class="font-medium text-sm">
+              <%= if @donor.confirmed_at do %>
+                <%= Calendar.strftime(@donor.confirmed_at, "%Y-%m-%d %H:%M") %>
+              <% else %>
+                -
+              <% end %>
+            </p>
+          </div>
+        </div>
+
+        <div class="divider my-2"></div>
+
+        <div class="flex justify-end">
+          <.link
+            href={~p"/admin/donors/#{@donor}"}
+            method="delete"
+            data-confirm="Estas seguro de archivar este donante?"
+            class="btn btn-warning btn-sm"
+          >
+            Archivar donante
+          </.link>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,55 @@
+<Layouts.flash_group flash={@flash} />
+
+<main class="px-4 py-20 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-sm space-y-4">
+    <div class="text-center">
+      <.header>
+        <p>Iniciar sesion</p>
+        <:subtitle>
+          <%= if @current_scope do %>
+            Necesitas re-autenticarte para realizar acciones sensibles en tu cuenta.
+          <% else %>
+            No tenes cuenta? <.link
+              navigate={~p"/users/register"}
+              class="font-semibold text-primary hover:underline"
+              phx-no-format
+            >Registrate</.link> ahora.
+          <% end %>
+        </:subtitle>
+      </.header>
+    </div>
+
+    <div :if={local_mail_adapter?()} class="alert alert-info">
+      <.icon name="hero-information-circle" class="size-6 shrink-0" />
+      <div>
+        <p>Estas usando el adaptador de mail local.</p>
+        <p>
+          Para ver los emails enviados, visita <.link href="/dev/mailbox" class="underline">la pagina de mailbox</.link>.
+        </p>
+      </div>
+    </div>
+
+    <.form :let={f} for={@form} as={:user} id="login_form_password" action={~p"/users/log-in"}>
+      <.input
+        readonly={!!@current_scope}
+        field={f[:email]}
+        type="email"
+        label="Email"
+        autocomplete="email"
+        required
+      />
+      <.input
+        field={f[:password]}
+        type="password"
+        label="Contrasena"
+        autocomplete="current-password"
+      />
+      <.button class="btn btn-primary w-full" name={@form[:remember_me].name} value="true">
+        Iniciar sesion y mantenerme conectado <span aria-hidden="true">→</span>
+      </.button>
+      <.button class="btn btn-primary btn-soft w-full mt-2">
+        Iniciar sesion solo esta vez
+      </.button>
+    </.form>
+  </div>
+</main>

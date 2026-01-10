@@ -1,0 +1,357 @@
+<Layouts.flash_group flash={@flash} />
+
+<main class="px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-4xl">
+    <div class="flex items-center gap-4 mb-8">
+      <.link navigate={~p"/admin"} class="btn btn-ghost btn-sm btn-circle">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </.link>
+      <h1 class="text-2xl font-bold">Organizaciones</h1>
+    </div>
+
+    <div class="flex gap-2 mb-6">
+      <.link
+        patch={~p"/admin/organizations?tab=pending"}
+        class={["btn btn-sm gap-2", if(@tab == "pending", do: "btn-primary", else: "btn-ghost")]}
+      >
+        Pendientes
+      </.link>
+      <.link
+        patch={~p"/admin/organizations?tab=approved"}
+        class={["btn btn-sm gap-2", if(@tab == "approved", do: "btn-primary", else: "btn-ghost")]}
+      >
+        Activas
+      </.link>
+      <.link
+        patch={~p"/admin/organizations?tab=archived"}
+        class={["btn btn-sm gap-2", if(@tab == "archived", do: "btn-primary", else: "btn-ghost")]}
+      >
+        Archivadas
+      </.link>
+    </div>
+    
+<!-- Filters -->
+    <form phx-change="filter" class="mb-6">
+      <div class="flex flex-wrap gap-3 items-center">
+        <select name="province" class="select select-bordered select-sm w-44">
+          <option
+            value=""
+            disabled={@filters["province"] != ""}
+            selected={@filters["province"] == ""}
+          >
+            Provincia
+          </option>
+          <option value="CABA" selected={@filters["province"] == "CABA"}>CABA</option>
+          <option value="Buenos Aires" selected={@filters["province"] == "Buenos Aires"}>
+            Buenos Aires
+          </option>
+        </select>
+
+        <%= if @filters["province"] == "Buenos Aires" do %>
+          <select name="municipality" class="select select-bordered select-sm w-52">
+            <option
+              value=""
+              disabled={@filters["municipality"] != ""}
+              selected={@filters["municipality"] == ""}
+            >
+              Municipio
+            </option>
+            <option value="Adolfo Alsina" selected={@filters["municipality"] == "Adolfo Alsina"}>
+              Adolfo Alsina
+            </option>
+            <option
+              value="Adolfo Gonzales Chaves"
+              selected={@filters["municipality"] == "Adolfo Gonzales Chaves"}
+            >
+              Adolfo Gonzales Chaves
+            </option>
+            <option value="Alberti" selected={@filters["municipality"] == "Alberti"}>
+              Alberti
+            </option>
+            <option
+              value="Almirante Brown"
+              selected={@filters["municipality"] == "Almirante Brown"}
+            >
+              Almirante Brown
+            </option>
+            <option value="Avellaneda" selected={@filters["municipality"] == "Avellaneda"}>
+              Avellaneda
+            </option>
+            <option value="Bahia Blanca" selected={@filters["municipality"] == "Bahia Blanca"}>
+              Bahia Blanca
+            </option>
+            <option value="Berazategui" selected={@filters["municipality"] == "Berazategui"}>
+              Berazategui
+            </option>
+            <option value="Escobar" selected={@filters["municipality"] == "Escobar"}>
+              Escobar
+            </option>
+            <option value="Ezeiza" selected={@filters["municipality"] == "Ezeiza"}>Ezeiza</option>
+            <option
+              value="Florencio Varela"
+              selected={@filters["municipality"] == "Florencio Varela"}
+            >
+              Florencio Varela
+            </option>
+            <option
+              value="General San Martin"
+              selected={@filters["municipality"] == "General San Martin"}
+            >
+              General San Martin
+            </option>
+            <option value="Hurlingham" selected={@filters["municipality"] == "Hurlingham"}>
+              Hurlingham
+            </option>
+            <option value="Ituzaingo" selected={@filters["municipality"] == "Ituzaingo"}>
+              Ituzaingo
+            </option>
+            <option value="La Matanza" selected={@filters["municipality"] == "La Matanza"}>
+              La Matanza
+            </option>
+            <option value="La Plata" selected={@filters["municipality"] == "La Plata"}>
+              La Plata
+            </option>
+            <option value="Lanus" selected={@filters["municipality"] == "Lanus"}>Lanus</option>
+            <option
+              value="Lomas de Zamora"
+              selected={@filters["municipality"] == "Lomas de Zamora"}
+            >
+              Lomas de Zamora
+            </option>
+            <option
+              value="Malvinas Argentinas"
+              selected={@filters["municipality"] == "Malvinas Argentinas"}
+            >
+              Malvinas Argentinas
+            </option>
+            <option value="Merlo" selected={@filters["municipality"] == "Merlo"}>Merlo</option>
+            <option value="Moron" selected={@filters["municipality"] == "Moron"}>Moron</option>
+            <option value="Pilar" selected={@filters["municipality"] == "Pilar"}>Pilar</option>
+            <option value="Quilmes" selected={@filters["municipality"] == "Quilmes"}>
+              Quilmes
+            </option>
+            <option value="San Fernando" selected={@filters["municipality"] == "San Fernando"}>
+              San Fernando
+            </option>
+            <option value="San Isidro" selected={@filters["municipality"] == "San Isidro"}>
+              San Isidro
+            </option>
+            <option value="San Miguel" selected={@filters["municipality"] == "San Miguel"}>
+              San Miguel
+            </option>
+            <option value="Tigre" selected={@filters["municipality"] == "Tigre"}>Tigre</option>
+            <option
+              value="Tres de Febrero"
+              selected={@filters["municipality"] == "Tres de Febrero"}
+            >
+              Tres de Febrero
+            </option>
+            <option value="Vicente Lopez" selected={@filters["municipality"] == "Vicente Lopez"}>
+              Vicente Lopez
+            </option>
+          </select>
+        <% end %>
+
+        <select name="has_legal_entity" class="select select-bordered select-sm w-44">
+          <option
+            value=""
+            disabled={@filters["has_legal_entity"] != ""}
+            selected={@filters["has_legal_entity"] == ""}
+          >
+            Personeria juridica
+          </option>
+          <option value="true" selected={@filters["has_legal_entity"] == "true"}>
+            Con personeria
+          </option>
+          <option value="false" selected={@filters["has_legal_entity"] == "false"}>
+            Sin personeria
+          </option>
+        </select>
+
+        <div class="flex-1"></div>
+
+        <.link patch={~p"/admin/organizations?tab=#{@tab}"} class="btn btn-sm btn-ghost">
+          Limpiar filtros
+        </.link>
+      </div>
+    </form>
+
+    <%= if @organizations == [] do %>
+      <div class="text-center py-12 text-base-content/60">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-16 w-16 mx-auto mb-4 opacity-50"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+          />
+        </svg>
+        <p class="text-lg">
+          <%= case @tab do %>
+            <% "pending" -> %>
+              No hay organizaciones pendientes
+            <% "archived" -> %>
+              No hay organizaciones archivadas
+            <% _ -> %>
+              No hay organizaciones aprobadas
+          <% end %>
+        </p>
+      </div>
+    <% else %>
+      <div class="space-y-3" id="organizations-list">
+        <%= for org <- @organizations do %>
+          <div class="card bg-base-200 shadow-sm hover:bg-base-300 transition-colors">
+            <div class="card-body py-3 px-4">
+              <div class="flex justify-between items-center gap-4">
+                <.link
+                  navigate={~p"/admin/organizations/#{org}"}
+                  class="flex-1 min-w-0 cursor-pointer"
+                >
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <h3 class="font-semibold truncate">
+                      {if org.organization,
+                        do: org.organization.organization_name,
+                        else: "Sin nombre"}
+                    </h3>
+                  </div>
+                  <div class="text-sm text-base-content/60 mt-1">
+                    <span>{org.first_name} {org.last_name}</span>
+                    <span class="mx-1">·</span>
+                    <span>{org.email}</span>
+                    <%= if org.organization do %>
+                      <span class="mx-1">·</span>
+                      <span>
+                        {org.organization.province}{if org.organization.municipality,
+                          do: ", #{org.organization.municipality}",
+                          else: ""}
+                      </span>
+                    <% end %>
+                  </div>
+                </.link>
+                <div class="flex gap-2 shrink-0">
+                  <.link
+                    navigate={~p"/admin/organizations/#{org}/edit"}
+                    class="btn btn-ghost btn-sm"
+                  >
+                    Editar
+                  </.link>
+                  <%= if @tab == "pending" do %>
+                    <button
+                      type="button"
+                      phx-click="approve"
+                      phx-value-id={org.id}
+                      data-confirm="Estas seguro de aprobar esta organizacion?"
+                      class="btn btn-success btn-sm"
+                    >
+                      Aprobar
+                    </button>
+                  <% end %>
+                  <%= if @tab == "archived" do %>
+                    <button
+                      type="button"
+                      phx-click="unarchive"
+                      phx-value-id={org.id}
+                      data-confirm="Estas seguro de desarchivar esta organizacion?"
+                      class="btn btn-warning btn-sm"
+                    >
+                      Desarchivar
+                    </button>
+                  <% else %>
+                    <button
+                      type="button"
+                      phx-click="archive"
+                      phx-value-id={org.id}
+                      data-confirm="Estas seguro de archivar esta organizacion?"
+                      class="btn btn-warning btn-sm"
+                    >
+                      Archivar
+                    </button>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <%= if @total_pages > 1 do %>
+        <div class="flex justify-center items-center gap-2 mt-8">
+          <%= if @page > 1 do %>
+            <.link
+              patch={build_pagination_path(@tab, @page - 1, @filters)}
+              class="btn btn-sm btn-ghost"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </.link>
+          <% end %>
+
+          <%= for page_num <- max(1, @page - 2)..min(@total_pages, @page + 2) do %>
+            <.link
+              patch={build_pagination_path(@tab, page_num, @filters)}
+              class={["btn btn-sm", if(page_num == @page, do: "btn-primary", else: "btn-ghost")]}
+            >
+              {page_num}
+            </.link>
+          <% end %>
+
+          <%= if @page < @total_pages do %>
+            <.link
+              patch={build_pagination_path(@tab, @page + 1, @filters)}
+              class="btn btn-sm btn-ghost"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </.link>
+          <% end %>
+        </div>
+        <p class="text-center text-sm text-base-content/60 mt-2">
+          Mostrando {length(@organizations)} de {@total_count} organizaciones
+        </p>
+      <% end %>
+    <% end %>
+  </div>
+</main>

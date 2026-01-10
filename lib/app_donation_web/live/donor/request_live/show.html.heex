@@ -1,0 +1,142 @@
+<Layouts.flash_group flash={@flash} />
+
+<main class="px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-2xl">
+    <div class="mb-4">
+      <.link navigate={~p"/donor/requests"} class="text-sm text-base-content/60 hover:text-base-content">
+        &larr; Pedidos activos
+      </.link>
+    </div>
+
+    <div class="card bg-base-200">
+      <div class="card-body">
+        <!-- Organization info -->
+        <div class="mb-4">
+          <p class="text-sm text-base-content/60">Organizacion</p>
+          <p class="font-semibold">{@request.organization.organization_name}</p>
+          <p class="text-sm text-base-content/60">
+            {@request.organization.province}<%= if @request.organization.municipality, do: ", #{@request.organization.municipality}", else: "" %>
+          </p>
+        </div>
+
+        <div class="divider my-2"></div>
+
+        <!-- Request details -->
+        <h1 class="text-xl font-bold mb-2">{@request.title}</h1>
+        <span class="badge badge-ghost">{@request.category.name}</span>
+
+        <div class="grid grid-cols-2 gap-4 my-4">
+          <div>
+            <span class="text-sm text-base-content/60">Monto solicitado</span>
+            <p class="font-medium">{format_currency(@request.amount)}</p>
+          </div>
+          <div>
+            <span class="text-sm text-base-content/60">Fecha limite</span>
+            <p class="font-medium">{format_date(@request.deadline)}</p>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="mb-4">
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-base-content/60">Recaudado</span>
+            <span class="font-medium">{format_currency(@request.amount_raised)} de {format_currency(@request.amount)}</span>
+          </div>
+          <progress
+            class="progress progress-success w-full"
+            value={Decimal.to_float(@request.amount_raised)}
+            max={Decimal.to_float(@request.amount)}
+          ></progress>
+        </div>
+
+        <div>
+          <span class="text-sm text-base-content/60">Descripcion</span>
+          <p class="mt-1 whitespace-pre-wrap">{@request.description}</p>
+        </div>
+
+        <%= if @request.reference_links != [] do %>
+          <div class="divider"></div>
+          <div>
+            <span class="text-sm text-base-content/60">Links de referencia</span>
+            <ul class="mt-2 space-y-1">
+              <%= for link <- @request.reference_links do %>
+                <li>
+                  <a href={link} target="_blank" rel="noopener noreferrer" class="link link-primary text-sm flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    {link}
+                  </a>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="divider"></div>
+        <div class="flex justify-end">
+          <button type="button" phx-click="open_modal" class="btn btn-primary">
+            Donar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Donation Modal -->
+<%= if @show_modal do %>
+  <div class="modal modal-open">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg mb-4">Realizar donacion</h3>
+
+      <!-- Payment info -->
+      <div class="bg-base-300 rounded-lg p-4 mb-4">
+        <p class="text-sm text-base-content/60 mb-2">Datos de transferencia</p>
+        <%= if @request.organization.cbu do %>
+          <div class="mb-2">
+            <span class="text-xs text-base-content/60">CBU</span>
+            <p class="font-mono text-sm">{@request.organization.cbu}</p>
+          </div>
+        <% end %>
+        <%= if @request.organization.payment_alias do %>
+          <div>
+            <span class="text-xs text-base-content/60">Alias</span>
+            <p class="font-medium text-sm">{@request.organization.payment_alias}</p>
+          </div>
+        <% end %>
+      </div>
+
+      <.form for={@form} phx-change="validate_donation" phx-submit="save_donation">
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Monto a donar</span>
+          </label>
+          <input
+            type="number"
+            name="donation[amount]"
+            value={@form[:amount].value}
+            placeholder="0.00"
+            step="0.01"
+            min="1"
+            class={["input input-bordered", @form[:amount].errors != [] && "input-error"]}
+            required
+          />
+          <%= if @form[:amount].errors != [] do %>
+            <label class="label">
+              <span class="label-text-alt text-error">
+                {elem(hd(@form[:amount].errors), 0)}
+              </span>
+            </label>
+          <% end %>
+        </div>
+
+        <div class="modal-action">
+          <button type="button" phx-click="close_modal" class="btn btn-ghost">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Aceptar</button>
+        </div>
+      </.form>
+    </div>
+    <div class="modal-backdrop" phx-click="close_modal"></div>
+  </div>
+<% end %>

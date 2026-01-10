@@ -1,0 +1,35 @@
+defmodule AppDonationWeb.UserRegistrationController do
+  use AppDonationWeb, :controller
+
+  alias AppDonation.Accounts
+  alias AppDonation.Accounts.User
+
+  def new(conn, _params) do
+    changeset = Accounts.change_user_registration(%User{})
+    render(conn, :new, changeset: changeset)
+  end
+
+  def create(conn, %{"user" => user_params}) do
+    # Only donors can register through public registration
+    user_params = Map.put(user_params, "role", "donor")
+
+    case Accounts.register_user(user_params) do
+      {:ok, user} ->
+        {:ok, _} =
+          Accounts.deliver_login_instructions(
+            user,
+            &url(~p"/users/log-in/#{&1}")
+          )
+
+        conn
+        |> put_flash(
+          :info,
+          "An email was sent to #{user.email}, please access it to confirm your account."
+        )
+        |> redirect(to: ~p"/users/log-in")
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, :new, changeset: changeset)
+    end
+  end
+end

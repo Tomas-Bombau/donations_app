@@ -1,0 +1,111 @@
+<Layouts.flash_group flash={@flash} />
+
+<main class="px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-sm">
+    <div class="text-center mb-6">
+      <.header>
+        Crear cuenta de donante
+        <:subtitle>
+          Ya tenes una cuenta?
+          <.link navigate={~p"/users/log-in"} class="font-semibold text-primary hover:underline">
+            Iniciar sesion
+          </.link>
+        </:subtitle>
+      </.header>
+    </div>
+
+    <.form :let={f} for={@changeset} action={~p"/users/register"} class="space-y-6">
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h3 class="card-title text-lg">Datos de contacto</h3>
+
+          <div class="grid grid-cols-2 gap-4">
+            <.input
+              field={f[:first_name]}
+              type="text"
+              label="Nombre"
+              autocomplete="given-name"
+              required
+              phx-mounted={JS.focus()}
+            />
+            <.input
+              field={f[:last_name]}
+              type="text"
+              label="Apellido"
+              autocomplete="family-name"
+              required
+            />
+          </div>
+
+          <.input
+            field={f[:email]}
+            type="email"
+            label="Email"
+            autocomplete="email"
+            required
+          />
+
+          <.input
+            field={f[:password]}
+            type="password"
+            label="Contrasena"
+            autocomplete="new-password"
+            required
+            id="password"
+            phx-hook="PasswordValidation"
+          />
+
+          <.input
+            field={f[:password_confirmation]}
+            type="password"
+            label="Confirmar contrasena"
+            autocomplete="new-password"
+            required
+            id="password_confirmation"
+          />
+
+          <div id="password-match-error" class="text-error text-sm mt-1 hidden">
+            Las contrasenas no coinciden
+          </div>
+        </div>
+      </div>
+
+      <.button phx-disable-with="Creando cuenta..." class="btn btn-primary w-full" id="submit-btn">
+        Crear cuenta
+      </.button>
+    </.form>
+
+    <p class="text-center text-sm text-base-content/60 mt-6">
+      Sos una organizacion?
+      <.link navigate={~p"/organizations/register"} class="font-semibold text-primary hover:underline">
+        Registrate aca
+      </.link>
+    </p>
+  </div>
+</main>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const password = document.getElementById("password");
+    const confirmation = document.getElementById("password_confirmation");
+    const error = document.getElementById("password-match-error");
+    const submitBtn = document.getElementById("submit-btn");
+
+    function validatePasswords() {
+      if (confirmation.value && password.value !== confirmation.value) {
+        error.classList.remove("hidden");
+        confirmation.classList.add("input-error");
+        submitBtn.disabled = true;
+      } else {
+        error.classList.add("hidden");
+        confirmation.classList.remove("input-error");
+        submitBtn.disabled = false;
+      }
+    }
+
+    if (password && confirmation) {
+      password.addEventListener("input", validatePasswords);
+      confirmation.addEventListener("input", validatePasswords);
+    }
+  });
+</script>

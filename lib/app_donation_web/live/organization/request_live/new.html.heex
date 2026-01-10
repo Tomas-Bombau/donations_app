@@ -1,0 +1,220 @@
+<Layouts.flash_group flash={@flash} />
+
+<main class="px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-2xl">
+    <div class="flex items-center gap-4 mb-8">
+      <.link navigate={~p"/organization/requests"} class="btn btn-ghost btn-sm btn-circle">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </.link>
+      <h1 class="text-2xl font-bold">Nuevo pedido</h1>
+    </div>
+
+    <.form for={@form} phx-change="validate" phx-submit="save">
+      <div class="card bg-base-200">
+        <div class="card-body space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="form-control md:col-span-2">
+              <label class="label">
+                <span class="label-text">Titulo</span>
+              </label>
+              <input
+                type="text"
+                name="request[title]"
+                value={Phoenix.HTML.Form.input_value(@form, :title)}
+                class={[
+                  "input input-bordered w-full",
+                  @form.errors[:title] && "input-error"
+                ]}
+                placeholder="Ej: Computadora para el aula de informatica"
+                maxlength="200"
+                required
+              />
+              <%= if error = @form.errors[:title] do %>
+                <label class="label">
+                  <span class="label-text-alt text-error">{translate_error(error)}</span>
+                </label>
+              <% end %>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Fecha limite</span>
+              </label>
+              <input
+                type="date"
+                name="request[deadline]"
+                value={Phoenix.HTML.Form.input_value(@form, :deadline)}
+                class={[
+                  "input input-bordered w-full",
+                  @form.errors[:deadline] && "input-error"
+                ]}
+                min={Date.utc_today() |> Date.add(1) |> Date.to_string()}
+                required
+              />
+              <%= if error = @form.errors[:deadline] do %>
+                <label class="label">
+                  <span class="label-text-alt text-error">{translate_error(error)}</span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Descripcion</span>
+            </label>
+            <textarea
+              name="request[description]"
+              class={[
+                "textarea textarea-bordered w-full",
+                @form.errors[:description] && "textarea-error"
+              ]}
+              rows="4"
+              placeholder="Describe el pedido, para que se necesita, como sera utilizado..."
+              maxlength="5000"
+              required
+            >{Phoenix.HTML.Form.input_value(@form, :description)}</textarea>
+            <%= if error = @form.errors[:description] do %>
+              <label class="label">
+                <span class="label-text-alt text-error">{translate_error(error)}</span>
+              </label>
+            <% end %>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Categoria</span>
+              </label>
+              <select
+                name="request[category_id]"
+                class={[
+                  "select select-bordered w-full",
+                  @form.errors[:category_id] && "select-error"
+                ]}
+                required
+              >
+                <option value="" disabled selected={is_nil(Phoenix.HTML.Form.input_value(@form, :category_id))}>
+                  Seleccionar categoria
+                </option>
+                <%= for category <- @categories do %>
+                  <option value={category.id} selected={Phoenix.HTML.Form.input_value(@form, :category_id) == category.id}>
+                    {category.name}
+                  </option>
+                <% end %>
+              </select>
+              <%= if error = @form.errors[:category_id] do %>
+                <label class="label">
+                  <span class="label-text-alt text-error">{translate_error(error)}</span>
+                </label>
+              <% end %>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Monto necesario</span>
+              </label>
+              <label class="input input-bordered flex items-center gap-2">
+                <span class="text-base-content/60">$</span>
+                <input
+                  type="number"
+                  name="request[amount]"
+                  value={Phoenix.HTML.Form.input_value(@form, :amount)}
+                  class={[
+                    "grow",
+                    @form.errors[:amount] && "text-error"
+                  ]}
+                  min="1"
+                  step="0.01"
+                  placeholder="0.00"
+                  required
+                />
+              </label>
+              <%= if error = @form.errors[:amount] do %>
+                <label class="label">
+                  <span class="label-text-alt text-error">{translate_error(error)}</span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div>
+            <h3 class="font-medium mb-1">Links de referencia</h3>
+            <p class="text-sm text-base-content/60 mb-4">
+              Agrega links a productos en MercadoLibre, paginas oficiales, etc. a modo ilustrativo (opcional)
+            </p>
+
+            <div class="space-y-3">
+              <%= for {link, index} <- Enum.with_index(@reference_links) do %>
+                <div class="flex gap-2">
+                  <input
+                    type="url"
+                    value={link}
+                    phx-blur="update_link"
+                    phx-value-index={index}
+                    phx-value-value={link}
+                    class="input input-bordered flex-1"
+                    placeholder="https://..."
+                  />
+                  <button
+                    type="button"
+                    phx-click="remove_link"
+                    phx-value-index={index}
+                    class="btn btn-ghost btn-square"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              <% end %>
+            </div>
+
+            <button
+              type="button"
+              phx-click="add_link"
+              class="btn btn-ghost btn-sm mt-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Agregar link
+            </button>
+
+            <%= if error = @form.errors[:reference_links] do %>
+              <div class="alert alert-error mt-2">
+                <span>{translate_error(error)}</span>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="flex gap-2 justify-end">
+            <.link navigate={~p"/organization/requests"} class="btn btn-ghost">
+              Cancelar
+            </.link>
+            <button type="submit" class="btn btn-primary">
+              Crear borrador
+            </button>
+          </div>
+        </div>
+      </div>
+    </.form>
+  </div>
+</main>
