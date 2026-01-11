@@ -5,16 +5,16 @@
 # Inside the script, you can read and write to any of your
 # repositories directly:
 #
-#     AppDonation.Repo.insert!(%AppDonation.SomeSchema{})
+#     PuenteApp.Repo.insert!(%PuenteApp.SomeSchema{})
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias AppDonation.Repo
-alias AppDonation.Accounts.User
-alias AppDonation.Organizations.Organization
-alias AppDonation.Catalog.Category
-alias AppDonation.Requests.Request
+alias PuenteApp.Repo
+alias PuenteApp.Accounts.User
+alias PuenteApp.Organizations.Organization
+alias PuenteApp.Catalog.Category
+alias PuenteApp.Requests.Request
 
 # Create categories
 IO.puts("Creating categories...")

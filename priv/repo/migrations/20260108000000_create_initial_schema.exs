@@ -1,4 +1,4 @@
-defmodule AppDonation.Repo.Migrations.CreateInitialSchema do
+defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
   use Ecto.Migration
 
   def change do

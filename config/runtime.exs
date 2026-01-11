@@ -12,15 +12,15 @@ import Config
 # If you use `mix release`, you need to explicitly enable the server
 # by passing the PHX_SERVER=true when you start it:
 #
-#     PHX_SERVER=true bin/app_donation start
+#     PHX_SERVER=true bin/puente_app start
 #
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
 if System.get_env("PHX_SERVER") do
-  config :app_donation, AppDonationWeb.Endpoint, server: true
+  config :puente_app, PuenteAppWeb.Endpoint, server: true
 end
 
-config :app_donation, AppDonationWeb.Endpoint,
+config :puente_app, PuenteAppWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 
 if config_env() == :prod do
@@ -33,7 +33,7 @@ if config_env() == :prod do
 
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
-  config :app_donation, AppDonation.Repo,
+  config :puente_app, PuenteApp.Repo,
     # ssl: true,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
@@ -55,9 +55,9 @@ if config_env() == :prod do
 
   host = System.get_env("PHX_HOST") || "example.com"
 
-  config :app_donation, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
+  config :puente_app, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
-  config :app_donation, AppDonationWeb.Endpoint,
+  config :puente_app, PuenteAppWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
     http: [
       # Enable IPv6 and bind on all interfaces.
@@ -73,7 +73,7 @@ if config_env() == :prod do
   # To get SSL working, you will need to add the `https` key
   # to your endpoint configuration:
   #
-  #     config :app_donation, AppDonationWeb.Endpoint,
+  #     config :puente_app, PuenteAppWeb.Endpoint,
   #       https: [
   #         ...,
   #         port: 443,
@@ -95,19 +95,19 @@ if config_env() == :prod do
   # We also recommend setting `force_ssl` in your config/prod.exs,
   # ensuring no data is ever sent via http, always redirecting to https:
   #
-  #     config :app_donation, AppDonationWeb.Endpoint,
+  #     config :puente_app, PuenteAppWeb.Endpoint,
   #       force_ssl: [hsts: true]
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.
 
   # Brevo (formerly Sendinblue) mailer configuration
-  config :app_donation, AppDonation.Mailer,
+  config :puente_app, PuenteApp.Mailer,
     adapter: Swoosh.Adapters.Brevo,
     api_key: System.get_env("BREVO_API_KEY") || raise("BREVO_API_KEY is required in production")
 
   # Email sender configuration
-  config :app_donation,
-    mailer_from_name: System.get_env("MAILER_FROM_NAME", "AppDonation"),
+  config :puente_app,
+    mailer_from_name: System.get_env("MAILER_FROM_NAME", "PuenteApp"),
     mailer_from_email:
       System.get_env("MAILER_FROM_EMAIL") || raise("MAILER_FROM_EMAIL is required in production")
 end

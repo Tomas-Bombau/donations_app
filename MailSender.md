@@ -50,13 +50,13 @@ La configuración ya está implementada en `config/runtime.exs`:
 
 ```elixir
 # Brevo mailer
-config :app_donation, AppDonation.Mailer,
+config :puente_app, PuenteApp.Mailer,
   adapter: Swoosh.Adapters.Brevo,
   api_key: System.get_env("BREVO_API_KEY")
 
 # Email sender
-config :app_donation,
-  mailer_from_name: System.get_env("MAILER_FROM_NAME", "AppDonation"),
+config :puente_app,
+  mailer_from_name: System.get_env("MAILER_FROM_NAME", "PuenteApp"),
   mailer_from_email: System.get_env("MAILER_FROM_EMAIL")
 ```
 
@@ -66,7 +66,7 @@ config :app_donation,
 |----------|-------------|---------|
 | `BREVO_API_KEY` | API Key de Brevo | `xkeysib-xxx...` |
 | `MAILER_FROM_EMAIL` | Email remitente (debe estar verificado en Brevo) | `noreply@tudominio.com` |
-| `MAILER_FROM_NAME` | Nombre del remitente (opcional) | `AppDonation` |
+| `MAILER_FROM_NAME` | Nombre del remitente (opcional) | `PuenteApp` |
 
 ## Pasos para configurar Brevo
 

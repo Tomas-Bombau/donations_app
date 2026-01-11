@@ -1,4 +1,4 @@
-# AppDonation
+# PuenteApp
 
 A donation crowdfunding platform built with Phoenix LiveView, designed for organizations in Argentina (Buenos Aires and CABA) to create fundraising campaigns and connect with donors.
 
@@ -60,13 +60,13 @@ mix test
 
 ```
 lib/
-├── app_donation/           # Business logic contexts
+├── puente_app/           # Business logic contexts
 │   ├── accounts/           # User authentication & management
 │   ├── organizations/      # Organization profiles
 │   ├── requests/           # Donation requests
 │   ├── donations/          # Donation tracking
 │   └── catalog/            # Categories
-└── app_donation_web/       # Web layer
+└── puente_app_web/       # Web layer
     ├── controllers/        # Traditional controllers
     ├── live/               # LiveView components
     │   ├── admin/          # Admin dashboard

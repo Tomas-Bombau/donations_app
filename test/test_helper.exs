@@ -1,2 +1,2 @@
 ExUnit.start()
-Ecto.Adapters.SQL.Sandbox.mode(AppDonation.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(PuenteApp.Repo, :manual)

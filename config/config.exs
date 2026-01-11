@@ -7,32 +7,32 @@
 # General application configuration
 import Config
 
-config :app_donation, :scopes,
+config :puente_app, :scopes,
   user: [
     default: true,
-    module: AppDonation.Accounts.Scope,
+    module: PuenteApp.Accounts.Scope,
     assign_key: :current_scope,
     access_path: [:user, :id],
     schema_key: :user_id,
     schema_type: :id,
     schema_table: :users,
-    test_data_fixture: AppDonation.AccountsFixtures,
+    test_data_fixture: PuenteApp.AccountsFixtures,
     test_setup_helper: :register_and_log_in_user
   ]
 
-config :app_donation,
-  ecto_repos: [AppDonation.Repo],
+config :puente_app,
+  ecto_repos: [PuenteApp.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configure the endpoint
-config :app_donation, AppDonationWeb.Endpoint,
+config :puente_app, PuenteAppWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [html: AppDonationWeb.ErrorHTML, json: AppDonationWeb.ErrorJSON],
+    formats: [html: PuenteAppWeb.ErrorHTML, json: PuenteAppWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: AppDonation.PubSub,
+  pubsub_server: PuenteApp.PubSub,
   live_view: [signing_salt: "5FAPTIk5"]
 
 # Configure the mailer
@@ -42,12 +42,12 @@ config :app_donation, AppDonationWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :app_donation, AppDonation.Mailer, adapter: Swoosh.Adapters.Local
+config :puente_app, PuenteApp.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.25.4",
-  app_donation: [
+  puente_app: [
     args:
       ~w(js/app.js --bundle --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
     cd: Path.expand("../assets", __DIR__),
@@ -57,7 +57,7 @@ config :esbuild,
 # Configure tailwind (the version is required)
 config :tailwind,
   version: "4.1.12",
-  app_donation: [
+  puente_app: [
     args: ~w(
       --input=assets/css/app.css
       --output=priv/static/assets/css/app.css

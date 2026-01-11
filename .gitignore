@@ -23,7 +23,7 @@ erl_crash.dump
 /tmp/
 
 # Ignore package tarball (built via "mix hex.build").
-app_adonation-*.tar
+puente_app-*.tar
 
 # Ignore assets that are produced by build tools.
 /priv/static/assets/
@@ -37,3 +37,6 @@ npm-debug.log
 
 # Environment variables (secrets)
 .env
+
+# Elixir Language Server
+/.elixir_ls/

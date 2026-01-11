@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: app_donation_dev
+      POSTGRES_DB: puente_app_dev
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
@@ -23,7 +23,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: ecto://postgres:postgres@db/app_donation_dev
+      DATABASE_URL: ecto://postgres:postgres@db/puente_app_dev
       PHX_HOST: localhost
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-super_secret_key_base_for_development_only_change_in_prod}
     volumes:

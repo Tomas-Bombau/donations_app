@@ -1,0 +1,15 @@
+defmodule PuenteAppWeb.Organization.ProfileLive do
+  use PuenteAppWeb, :live_view
+
+  @impl true
+  def mount(_params, _session, socket) do
+    organization = socket.assigns.organization
+    user = socket.assigns.current_scope.user
+
+    {:ok,
+     socket
+     |> assign(:page_title, "Mi Organizacion")
+     |> assign(:user, user)
+     |> assign(:organization, organization)}
+  end
+end

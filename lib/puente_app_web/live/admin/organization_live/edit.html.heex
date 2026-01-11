@@ -1,0 +1,353 @@
+<Layouts.flash_group flash={@flash} />
+
+<main class="px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-4xl">
+    <div class="mb-4">
+      <.link navigate={~p"/admin/organizations"} class="text-sm text-base-content/60 hover:text-base-content">
+        &larr; Organizaciones
+      </.link>
+    </div>
+
+    <h1 class="text-2xl font-bold mb-8">Editar organizacion</h1>
+
+    <form phx-submit="save" phx-change="validate">
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <!-- Datos del contacto -->
+          <h2 class="text-lg font-semibold">Datos del contacto</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Nombre</span>
+              </label>
+              <input
+                type="text"
+                name="user[first_name]"
+                value={@user_form[:first_name].value}
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Apellido</span>
+              </label>
+              <input
+                type="text"
+                name="user[last_name]"
+                value={@user_form[:last_name].value}
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Email</span>
+              </label>
+              <input
+                type="email"
+                name="user[email]"
+                value={@user_form[:email].value}
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Telefono</span>
+              </label>
+              <input
+                type="text"
+                name="user[phone]"
+                value={@user_form[:phone].value}
+                class="input input-bordered w-full"
+              />
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Datos de la organizacion -->
+          <h2 class="text-lg font-semibold">Datos de la organizacion</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Nombre de la organizacion</span>
+              </label>
+              <input
+                type="text"
+                name="organization[organization_name]"
+                value={@org_form[:organization_name].value}
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Rol en la organizacion</span>
+              </label>
+              <select
+                name="organization[organization_role]"
+                class="select select-bordered w-full"
+                required
+              >
+                <option value="" disabled selected={is_nil(@org_form[:organization_role].value)}>
+                  Seleccionar rol
+                </option>
+                <%= for {label, value} <- PuenteApp.Organizations.Organization.organization_role_options() do %>
+                  <option value={value} selected={@org_form[:organization_role].value == value}>
+                    {label}
+                  </option>
+                <% end %>
+              </select>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Direccion</span>
+              </label>
+              <input
+                type="text"
+                name="organization[address]"
+                value={@org_form[:address].value}
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Provincia</span>
+              </label>
+              <select
+                name="organization[province]"
+                class="select select-bordered w-full"
+                required
+              >
+                <option value="" disabled selected={is_nil(@org_form[:province].value)}>
+                  Seleccionar provincia
+                </option>
+                <%= for {label, value} <- PuenteApp.Organizations.Organization.province_options() do %>
+                  <option value={value} selected={@org_form[:province].value == value}>
+                    {label}
+                  </option>
+                <% end %>
+              </select>
+            </div>
+
+            <%= if @org_form[:province].value == "Buenos Aires" do %>
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Municipio</span>
+                </label>
+                <select
+                  name="organization[municipality]"
+                  class="select select-bordered w-full"
+                  required
+                >
+                  <option value="" disabled selected={is_nil(@org_form[:municipality].value) or @org_form[:municipality].value == ""}>
+                    Seleccionar municipio
+                  </option>
+                  <%= for {label, value} <- PuenteApp.Organizations.Organization.municipality_options() do %>
+                    <option value={value} selected={@org_form[:municipality].value == value}>
+                      {label}
+                    </option>
+                  <% end %>
+                </select>
+              </div>
+            <% end %>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Publico</span>
+              </label>
+              <input
+                type="text"
+                name="organization[audience]"
+                value={@org_form[:audience].value}
+                class="input input-bordered w-full"
+                placeholder="Ej: Ninos, adultos mayores, familias"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Alcance</span>
+              </label>
+              <input
+                type="text"
+                name="organization[reach]"
+                value={@org_form[:reach].value}
+                class="input input-bordered w-full"
+                placeholder="Ej: 100 personas, 50 familias"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Facebook</span>
+              </label>
+              <input
+                type="text"
+                name="organization[facebook]"
+                value={@org_form[:facebook].value}
+                class="input input-bordered w-full"
+                placeholder="facebook.com/organizacion"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Instagram</span>
+              </label>
+              <input
+                type="text"
+                name="organization[instagram]"
+                value={@org_form[:instagram].value}
+                class="input input-bordered w-full"
+                placeholder="@organizacion"
+              />
+            </div>
+
+            <div class="form-control sm:col-span-2 lg:col-span-3">
+              <label class="label">
+                <span class="label-text">Actividades</span>
+              </label>
+              <textarea
+                name="organization[activities]"
+                class="textarea textarea-bordered w-full"
+                rows="2"
+                placeholder="Descripcion de las actividades que realiza la organizacion"
+              >{@org_form[:activities].value}</textarea>
+            </div>
+
+            <div class="form-control sm:col-span-2 lg:col-span-3 flex flex-row items-center gap-4">
+              <label class="label cursor-pointer justify-start gap-2 flex-1">
+                <input
+                  type="checkbox"
+                  name="organization[has_legal_entity]"
+                  value="true"
+                  checked={@org_form[:has_legal_entity].value == true}
+                  class="checkbox checkbox-primary"
+                />
+                <span class="label-text">La organizacion tiene personeria juridica</span>
+              </label>
+            </div>
+
+            <!-- Imagen de la organizacion -->
+            <div class="sm:col-span-2 lg:col-span-3">
+              <p class="text-sm font-medium text-base-content/70 mb-2">Imagen de la organizacion</p>
+              <div class="flex flex-wrap gap-4 items-start">
+                <!-- Current image -->
+                <%= if @user.organization && @user.organization.image_path do %>
+                  <div class="flex items-center gap-3">
+                    <img
+                      src={@user.organization.image_path}
+                      alt="Imagen actual"
+                      class="w-20 h-20 object-cover rounded-lg"
+                    />
+                    <span class="text-sm text-base-content/60">Imagen actual</span>
+                  </div>
+                <% end %>
+
+                <!-- Upload area -->
+                <div class="flex-1 min-w-[200px]">
+                  <div
+                    class="border-2 border-dashed border-base-content/20 rounded-lg p-4 text-center hover:border-primary transition-colors"
+                    phx-drop-target={@uploads.image.ref}
+                  >
+                    <.live_file_input upload={@uploads.image} class="hidden" />
+                    <label for={@uploads.image.ref} class="cursor-pointer">
+                      <.icon name="hero-photo" class="h-8 w-8 mx-auto text-base-content/40 mb-1" />
+                      <p class="text-sm text-base-content/60">
+                        Arrastra o <span class="text-primary">selecciona</span>
+                      </p>
+                      <p class="text-xs text-base-content/40">JPG, PNG, WebP (max 5MB)</p>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Preview uploaded files -->
+                <%= for entry <- @uploads.image.entries do %>
+                  <div class="flex items-center gap-3 p-2 bg-base-300 rounded-lg">
+                    <.live_img_preview entry={entry} class="w-16 h-16 object-cover rounded" />
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium truncate">{entry.client_name}</p>
+                      <p class="text-xs text-base-content/60">{trunc(entry.client_size / 1024)} KB</p>
+                    </div>
+                    <button
+                      type="button"
+                      phx-click="cancel_upload"
+                      phx-value-ref={entry.ref}
+                      class="btn btn-ghost btn-sm btn-circle"
+                    >
+                      <.icon name="hero-x-mark" class="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  <%= for err <- upload_errors(@uploads.image, entry) do %>
+                    <p class="text-error text-sm">{error_to_string(err)}</p>
+                  <% end %>
+                <% end %>
+
+                <%= for err <- upload_errors(@uploads.image) do %>
+                  <p class="text-error text-sm">{error_to_string(err)}</p>
+                <% end %>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Datos de pago -->
+          <h2 class="text-lg font-semibold">Datos de pago</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">CBU (22 digitos)</span>
+              </label>
+              <input
+                type="text"
+                name="organization[cbu]"
+                value={@org_form[:cbu].value}
+                maxlength="22"
+                pattern="[0-9]*"
+                inputmode="numeric"
+                class="input input-bordered w-full font-mono"
+                placeholder="0000000000000000000000"
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Alias de Mercado Pago</span>
+              </label>
+              <input
+                type="text"
+                name="organization[payment_alias]"
+                value={@org_form[:payment_alias].value}
+                class="input input-bordered w-full"
+                placeholder="mi.alias.mp"
+              />
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="flex justify-end gap-2">
+            <.link navigate={~p"/admin/organizations"} class="btn btn-ghost">
+              Cancelar
+            </.link>
+            <button type="submit" class="btn btn-primary">
+              Guardar cambios
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</main>

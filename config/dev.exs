@@ -3,17 +3,17 @@ import Config
 # Configure your database
 # Use DATABASE_URL if available (for Docker), otherwise use localhost defaults
 if database_url = System.get_env("DATABASE_URL") do
-  config :app_donation, AppDonation.Repo,
+  config :puente_app, PuenteApp.Repo,
     url: database_url,
     stacktrace: true,
     show_sensitive_data_on_connection_error: true,
     pool_size: 10
 else
-  config :app_donation, AppDonation.Repo,
+  config :puente_app, PuenteApp.Repo,
     username: "postgres",
     password: "postgres",
     hostname: "localhost",
-    database: "app_donation_dev",
+    database: "puente_app_dev",
     stacktrace: true,
     show_sensitive_data_on_connection_error: true,
     pool_size: 10
@@ -25,7 +25,7 @@ end
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
-config :app_donation, AppDonationWeb.Endpoint,
+config :puente_app, PuenteAppWeb.Endpoint,
   # Binding to all interfaces to allow access from Docker and other machines.
   http: [ip: {0, 0, 0, 0}],
   check_origin: false,
@@ -33,8 +33,8 @@ config :app_donation, AppDonationWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "CdDYpPGV+grQBATMUyEhoOsO8zw7LCUcJ7+WRRZe1jlmcxnpy6wFWJ9GiBzHezL5",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:app_donation, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:app_donation, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:puente_app, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:puente_app, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -61,7 +61,7 @@ config :app_donation, AppDonationWeb.Endpoint,
 # different ports.
 
 # Reload browser tabs when matching files change.
-config :app_donation, AppDonationWeb.Endpoint,
+config :puente_app, PuenteAppWeb.Endpoint,
   live_reload: [
     web_console_logger: true,
     patterns: [
@@ -70,13 +70,13 @@ config :app_donation, AppDonationWeb.Endpoint,
       # Gettext translations
       ~r"priv/gettext/.*\.po$",
       # Router, Controllers, LiveViews and LiveComponents
-      ~r"lib/app_donation_web/router\.ex$",
-      ~r"lib/app_donation_web/(controllers|live|components)/.*\.(ex|heex)$"
+      ~r"lib/puente_app_web/router\.ex$",
+      ~r"lib/puente_app_web/(controllers|live|components)/.*\.(ex|heex)$"
     ]
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :app_donation, dev_routes: true
+config :puente_app, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"

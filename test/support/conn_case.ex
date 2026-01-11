@@ -1,4 +1,4 @@
-defmodule AppDonationWeb.ConnCase do
+defmodule PuenteAppWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -11,7 +11,7 @@ defmodule AppDonationWeb.ConnCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use AppDonationWeb.ConnCase, async: true`, although
+  by setting `use PuenteAppWeb.ConnCase, async: true`, although
   this option is not recommended for other databases.
   """
 
@@ -20,19 +20,19 @@ defmodule AppDonationWeb.ConnCase do
   using do
     quote do
       # The default endpoint for testing
-      @endpoint AppDonationWeb.Endpoint
+      @endpoint PuenteAppWeb.Endpoint
 
-      use AppDonationWeb, :verified_routes
+      use PuenteAppWeb, :verified_routes
 
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
-      import AppDonationWeb.ConnCase
+      import PuenteAppWeb.ConnCase
     end
   end
 
   setup tags do
-    AppDonation.DataCase.setup_sandbox(tags)
+    PuenteApp.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 
@@ -45,8 +45,8 @@ defmodule AppDonationWeb.ConnCase do
   test context.
   """
   def register_and_log_in_user(%{conn: conn} = context) do
-    user = AppDonation.AccountsFixtures.user_fixture()
-    scope = AppDonation.Accounts.Scope.for_user(user)
+    user = PuenteApp.AccountsFixtures.user_fixture()
+    scope = PuenteApp.Accounts.Scope.for_user(user)
 
     opts =
       context
@@ -62,7 +62,7 @@ defmodule AppDonationWeb.ConnCase do
   It returns an updated `conn`.
   """
   def log_in_user(conn, user, opts \\ []) do
-    token = AppDonation.Accounts.generate_user_session_token(user)
+    token = PuenteApp.Accounts.generate_user_session_token(user)
 
     maybe_set_token_authenticated_at(token, opts[:token_authenticated_at])
 
@@ -74,6 +74,6 @@ defmodule AppDonationWeb.ConnCase do
   defp maybe_set_token_authenticated_at(_token, nil), do: nil
 
   defp maybe_set_token_authenticated_at(token, authenticated_at) do
-    AppDonation.AccountsFixtures.override_token_authenticated_at(token, authenticated_at)
+    PuenteApp.AccountsFixtures.override_token_authenticated_at(token, authenticated_at)
   end
 end

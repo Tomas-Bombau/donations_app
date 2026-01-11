@@ -1,0 +1,5 @@
+defmodule PuenteAppWeb.UserRegistrationHTML do
+  use PuenteAppWeb, :html
+
+  embed_templates "user_registration_html/*"
+end
