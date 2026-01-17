@@ -13,9 +13,11 @@ defmodule PuenteAppWeb.Organization.RequestLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    status = params["status"] || "all"
-    page = String.to_integer(params["page"] || "1")
     organization = socket.assigns.organization
+    page = String.to_integer(params["page"] || "1")
+
+    # Determine default status based on organization's requests
+    status = params["status"] || default_status(organization.id)
 
     {requests, total_count} = Requests.list_requests_for_organization(
       organization.id,
@@ -33,8 +35,8 @@ defmodule PuenteAppWeb.Organization.RequestLive.Index do
       Requests.has_active_request?(organization.id) ->
         {:no, "Ya tienes un pedido activo"}
 
-      not Requests.can_create_new_request?(organization.id) ->
-        {:no, "Espera 2 semanas desde tu ultimo pedido"}
+      Requests.has_pending_closure?(organization.id) ->
+        {:no, "Tienes un pedido finalizado pendiente de rendición"}
 
       true ->
         :yes
@@ -51,11 +53,20 @@ defmodule PuenteAppWeb.Organization.RequestLive.Index do
      |> assign(:can_create, can_create)}
   end
 
+  defp default_status(organization_id) do
+    cond do
+      Requests.has_pending_closure?(organization_id) -> "completed"
+      Requests.has_active_request?(organization_id) -> "active"
+      true -> "draft"
+    end
+  end
+
   defp status_badge(status) do
     case status do
       :draft -> "badge-warning"
       :active -> "badge-success"
       :completed -> "badge-error"
+      :closed -> "badge-info"
     end
   end
 
@@ -64,6 +75,7 @@ defmodule PuenteAppWeb.Organization.RequestLive.Index do
       :draft -> "Borrador"
       :active -> "Activo"
       :completed -> "Finalizado"
+      :closed -> "Cerrado"
     end
   end
 
@@ -80,7 +92,7 @@ defmodule PuenteAppWeb.Organization.RequestLive.Index do
 
   defp build_path(status, page) do
     params = %{}
-    params = if status != "all", do: Map.put(params, "status", status), else: params
+    params = if status != "draft", do: Map.put(params, "status", status), else: params
     params = if page > 1, do: Map.put(params, "page", page), else: params
 
     if params == %{} do

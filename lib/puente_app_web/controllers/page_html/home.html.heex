@@ -17,27 +17,27 @@
       <div class="text-center lg:text-left">
         <div class="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-6">
           <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-          Plataforma de donaciones solidarias
+          Tendiendo puentes de solidaridad
         </div>
 
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight">
-          <span class="text-base-content">Transforma vidas</span>
+          <span class="text-base-content">Construyamos juntos</span>
           <br />
           <span class="text-primary">
-            con tu generosidad
+            un puente de ayuda
           </span>
         </h1>
 
         <p class="mt-6 text-lg text-base-content/60 max-w-lg mx-auto lg:mx-0">
-          Conectamos personas que quieren ayudar con organizaciones que necesitan apoyo.
-          Dona objetos, alimentos y mas de forma simple y transparente.
+          Conectamos a quienes quieren ayudar con organizaciones que necesitan apoyo.
+          Cada aporte tiende un puente hacia quienes mas lo necesitan.
         </p>
 
         <!-- CTA Buttons -->
         <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
           <.link navigate={~p"/users/register"} class="btn btn-primary btn-lg shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all">
-            <.icon name="hero-heart" class="h-5 w-5 mr-2" />
-            Comenzar a donar
+            <.icon name="hero-hand-raised" class="h-5 w-5 mr-2" />
+            Quiero ayudar
           </.link>
           <.link navigate={~p"/organizations/register"} class="btn btn-outline btn-lg hover:bg-base-200 transition-all">
             Soy una organizacion
@@ -70,8 +70,8 @@
             <!-- Photo placeholder -->
             <div class="aspect-[4/3] bg-base-200 flex items-center justify-center">
               <img
-                src="https://images.unsplash.com/photo-1593113598332-cd288d649433?w=600&h=450&fit=crop"
-                alt="Organizacion recibiendo donaciones"
+                src="https://images.pexels.com/photos/5384623/pexels-photo-5384623.jpeg?auto=compress&cs=tinysrgb&w=600&h=450&fit=crop"
+                alt="Manos unidas en equipo representando comunidad y apoyo"
                 class="w-full h-full object-cover"
               />
             </div>
@@ -81,11 +81,11 @@
               <div class="grid grid-cols-2 gap-4">
                 <div class="text-center p-4 bg-base-200 rounded-xl">
                   <div class="text-3xl font-bold text-primary">500+</div>
-                  <div class="text-sm text-base-content/60">Donantes</div>
+                  <div class="text-sm text-base-content/60">Personas ayudando</div>
                 </div>
                 <div class="text-center p-4 bg-base-200 rounded-xl">
                   <div class="text-3xl font-bold text-primary">120+</div>
-                  <div class="text-sm text-base-content/60">Asociaciones</div>
+                  <div class="text-sm text-base-content/60">Organizaciones</div>
                 </div>
               </div>
             </div>
@@ -104,7 +104,7 @@
 </div>
 
 <!-- How it Works Section -->
-<div class="py-24 px-4 sm:px-6 lg:px-8 bg-base-200">
+<div id="como-funciona" class="py-24 px-4 sm:px-6 lg:px-8 bg-base-200">
   <div class="max-w-6xl mx-auto">
     <div class="text-center mb-16">
       <span class="text-primary font-semibold text-sm uppercase tracking-wider">Proceso simple</span>
@@ -124,7 +124,7 @@
           </div>
           <h3 class="text-xl font-bold mb-3">Crea tu cuenta</h3>
           <p class="text-base-content/60">
-            Registrate gratis como donante en solo unos pasos.
+            Registrate gratis y unite a nuestra comunidad solidaria.
           </p>
         </div>
       </div>
@@ -150,9 +150,9 @@
           <div class="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-primary/20">
             <span class="text-xl font-bold text-primary-content">3</span>
           </div>
-          <h3 class="text-xl font-bold mb-3">Hace tu donacion</h3>
+          <h3 class="text-xl font-bold mb-3">Tende tu puente</h3>
           <p class="text-base-content/60">
-            Dona lo que puedas - cada aporte suma y transforma la vida de alguien.
+            Ayuda con lo que puedas, cada aporte suma.
           </p>
         </div>
       </div>
@@ -161,7 +161,7 @@
 </div>
 
 <!-- Features Section with Gradient BG -->
-<div class="relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+<div id="para-quienes-ayudan" class="relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
   <!-- Background decoration -->
   <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/5 to-transparent"></div>
   <div class="absolute bottom-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
@@ -183,7 +183,7 @@
               <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4">
                 <.icon name="hero-gift" class="h-6 w-6 text-primary" />
               </div>
-              <h4 class="font-bold">Dona</h4>
+              <h4 class="font-bold">Ayuda</h4>
               <p class="text-sm text-base-content/60 mt-1">Objetos o alimentos</p>
             </div>
             <div class="bg-base-100 rounded-2xl p-6 shadow-lg">
@@ -206,9 +206,9 @@
 
       <!-- Right - Content -->
       <div class="order-1 lg:order-2">
-        <span class="text-primary font-semibold text-sm uppercase tracking-wider">Para donantes</span>
+        <span class="text-primary font-semibold text-sm uppercase tracking-wider">Para quienes quieren ayudar</span>
         <h2 class="text-3xl sm:text-4xl font-bold mt-2 mb-6">
-          Dona con confianza y transparencia
+          Ayuda con confianza y transparencia
         </h2>
         <ul class="space-y-5">
           <li class="flex items-start gap-4">
@@ -225,8 +225,8 @@
               <.icon name="hero-check" class="h-4 w-4 text-white" />
             </div>
             <div>
-              <h4 class="font-semibold">Dona lo que puedas</h4>
-              <p class="text-base-content/60 text-sm mt-1">Donaciones parciales o completas - todo suma</p>
+              <h4 class="font-semibold">Ayuda con lo que puedas</h4>
+              <p class="text-base-content/60 text-sm mt-1">Aportes parciales o completos - todo suma</p>
             </div>
           </li>
           <li class="flex items-start gap-4">
@@ -235,7 +235,7 @@
             </div>
             <div>
               <h4 class="font-semibold">Seguimiento en tiempo real</h4>
-              <p class="text-base-content/60 text-sm mt-1">Mira el impacto de tus donaciones y su estado</p>
+              <p class="text-base-content/60 text-sm mt-1">Mira el impacto de tu ayuda y su estado</p>
             </div>
           </li>
         </ul>
@@ -251,11 +251,16 @@
       <!-- Brand -->
       <div class="md:col-span-2">
         <div class="flex items-center gap-2 text-xl font-bold text-primary mb-4">
-          <.icon name="hero-heart" class="h-8 w-8" />
-          DonaApp
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 17h18"/>
+            <path d="M6 17v-4"/>
+            <path d="M18 17v-4"/>
+            <path d="M6 13c0-4 6-8 6-8s6 4 6 8"/>
+          </svg>
+          Puente
         </div>
         <p class="text-base-content/60 max-w-sm">
-          Conectando donaciones con necesidades. Hacemos que ayudar sea simple, transparente y efectivo.
+          Tendiendo puentes entre quienes quieren ayudar y quienes necesitan apoyo. Simple, transparente y efectivo.
         </p>
       </div>
 
@@ -263,9 +268,8 @@
       <div>
         <h4 class="font-semibold mb-4">Plataforma</h4>
         <ul class="space-y-2 text-base-content/60">
-          <li><a href="#" class="hover:text-primary transition-colors">Como funciona</a></li>
-          <li><a href="#" class="hover:text-primary transition-colors">Para donantes</a></li>
-          <li><a href="#" class="hover:text-primary transition-colors">Para organizaciones</a></li>
+          <li><a href="#como-funciona" class="hover:text-primary transition-colors">Como funciona</a></li>
+          <li><a href="#para-quienes-ayudan" class="hover:text-primary transition-colors">Para quienes ayudan</a></li>
         </ul>
       </div>
 
@@ -280,7 +284,7 @@
     </div>
 
     <div class="border-t border-base-content/10 mt-12 pt-8 text-center text-base-content/40 text-sm">
-      <p>2024 DonaApp. Hecho con amor para quienes mas lo necesitan.</p>
+      <p>2026 Puente. Hecho con amor para quienes mas lo necesitan.</p>
     </div>
   </div>
 </footer>

@@ -120,7 +120,7 @@ defmodule PuenteApp.Requests do
   Returns error if:
   - Organization doesn't have payment configured
   - Organization has an active request
-  - Last request was created less than 2 weeks ago
+  - Organization has a completed request pending closure (accountability report)
   """
   def create_request(%Organization{} = organization, attrs) do
     cond do
@@ -130,8 +130,8 @@ defmodule PuenteApp.Requests do
       has_active_request?(organization.id) ->
         {:error, :has_active_request}
 
-      not can_create_new_request?(organization.id) ->
-        {:error, :too_soon}
+      has_pending_closure?(organization.id) ->
+        {:error, :pending_closure}
 
       true ->
         attrs = Map.put(attrs, "organization_id", organization.id)
@@ -152,23 +152,25 @@ defmodule PuenteApp.Requests do
   end
 
   @doc """
-  Checks if organization can create a new request.
-  Returns true if the last request was created more than 2 weeks ago or if there are no requests.
+  Checks if the organization has a completed request pending closure.
+  Returns true if there's at least one request in 'completed' status without accountability report.
   """
-  def can_create_new_request?(organization_id) do
-    two_weeks_ago = DateTime.add(DateTime.utc_now(), -14, :day)
+  def has_pending_closure?(organization_id) do
+    Request
+    |> where(organization_id: ^organization_id, status: :completed)
+    |> Repo.exists?()
+  end
 
-    last_request =
-      Request
-      |> where(organization_id: ^organization_id)
-      |> order_by(desc: :inserted_at)
-      |> limit(1)
-      |> Repo.one()
-
-    case last_request do
-      nil -> true
-      request -> DateTime.compare(request.inserted_at, two_weeks_ago) == :lt
-    end
+  @doc """
+  Gets the request pending closure for an organization (if any).
+  """
+  def get_pending_closure(organization_id) do
+    Request
+    |> where(organization_id: ^organization_id, status: :completed)
+    |> preload(:category)
+    |> order_by(desc: :updated_at)
+    |> limit(1)
+    |> Repo.one()
   end
 
   @doc """
@@ -259,5 +261,25 @@ defmodule PuenteApp.Requests do
   """
   def change_request(%Request{} = request, attrs \\ %{}) do
     Request.create_changeset(request, attrs)
+  end
+
+  @doc """
+  Closes a completed request with an accountability report (completed -> closed).
+  """
+  def close_request(%Request{status: :completed} = request, attrs) do
+    request
+    |> Request.close_changeset(attrs)
+    |> Repo.update()
+  end
+
+  def close_request(%Request{}, _attrs) do
+    {:error, :cannot_close_not_completed}
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking closure form changes.
+  """
+  def change_closure(%Request{} = request, attrs \\ %{}) do
+    Request.closure_changeset(request, attrs)
   end
 end

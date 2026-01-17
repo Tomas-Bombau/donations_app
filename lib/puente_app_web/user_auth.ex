@@ -81,6 +81,8 @@ defmodule PuenteAppWeb.UserAuth do
   def fetch_current_scope_for_user(conn, _opts) do
     with {token, conn} <- ensure_user_token(conn),
          {user, token_inserted_at} <- Accounts.get_user_by_session_token(token) do
+      user = maybe_preload_organization(user)
+
       conn
       |> assign(:current_scope, Scope.for_user(user))
       |> maybe_reissue_user_session_token(user, token_inserted_at)
@@ -88,6 +90,12 @@ defmodule PuenteAppWeb.UserAuth do
       nil -> assign(conn, :current_scope, Scope.for_user(nil))
     end
   end
+
+  defp maybe_preload_organization(%User{role: :organization} = user) do
+    PuenteApp.Repo.preload(user, :organization)
+  end
+
+  defp maybe_preload_organization(user), do: user
 
   defp ensure_user_token(conn) do
     if token = get_session(conn, :user_token) do
@@ -383,8 +391,12 @@ defmodule PuenteAppWeb.UserAuth do
     Phoenix.Component.assign_new(socket, :current_scope, fn ->
       if token = session["user_token"] do
         case Accounts.get_user_by_session_token(token) do
-          {user, _token_inserted_at} -> Scope.for_user(user)
-          nil -> Scope.for_user(nil)
+          {user, _token_inserted_at} ->
+            user = maybe_preload_organization(user)
+            Scope.for_user(user)
+
+          nil ->
+            Scope.for_user(nil)
         end
       else
         Scope.for_user(nil)

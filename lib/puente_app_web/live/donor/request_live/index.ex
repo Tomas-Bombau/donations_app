@@ -100,9 +100,15 @@ defmodule PuenteAppWeb.Donor.RequestLive.Index do
       {:ok, _donation} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Donacion registrada exitosamente. Estado: pendiente de confirmacion.")
+         |> put_flash(:info, "Donacion registrada exitosamente. Gracias por tu aporte!")
          |> assign(:show_modal, false)
          |> push_navigate(to: ~p"/donor/donations")}
+
+      {:error, :request_not_active} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Este pedido ya no esta activo.")
+         |> assign(:show_modal, false)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :form, to_form(changeset, as: "donation"))}
@@ -119,16 +125,19 @@ defmodule PuenteAppWeb.Donor.RequestLive.Index do
     )
   end
 
-  defp build_path(page, filters) do
-    query_params =
-      %{page: page}
-      |> Map.merge(
-        filters
-        |> Enum.reject(fn {_k, v} -> v == "" or is_nil(v) end)
-        |> Map.new(fn {k, v} -> {String.to_atom(k), v} end)
-      )
+  # Allowed filter keys to prevent atom injection attacks
+  @allowed_filter_keys ~w(province municipality category_id)
 
-    if query_params == %{page: 1} do
+  defp build_path(page, filters) do
+    # Only allow known filter keys (whitelist approach)
+    safe_filters =
+      filters
+      |> Enum.filter(fn {k, v} -> k in @allowed_filter_keys and v != "" and not is_nil(v) end)
+      |> Map.new()
+
+    query_params = Map.put(safe_filters, "page", page)
+
+    if query_params == %{"page" => 1} do
       ~p"/donor/requests"
     else
       "/donor/requests?" <> URI.encode_query(query_params)
@@ -146,8 +155,15 @@ defmodule PuenteAppWeb.Donor.RequestLive.Index do
     |> then(&"$#{&1}")
   end
 
-  defp format_date(date) do
-    Calendar.strftime(date, "%d/%m/%Y")
+  defp days_until_deadline(deadline) do
+    days = Date.diff(deadline, Date.utc_today())
+
+    cond do
+      days < 0 -> "Vencido"
+      days == 0 -> "Vence hoy"
+      days == 1 -> "Vence manana"
+      true -> "Vence en #{days} dias"
+    end
   end
 
   defp progress_percentage(amount_raised, amount) do

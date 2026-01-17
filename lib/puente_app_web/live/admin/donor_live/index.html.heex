@@ -6,7 +6,7 @@
       <.link navigate={~p"/admin"} class="btn btn-ghost btn-sm btn-circle">
         <.icon name="hero-chevron-left" class="h-5 w-5" />
       </.link>
-      <h1 class="text-2xl font-bold">Donantes</h1>
+      <h1 class="text-2xl font-bold">Colaboradores</h1>
     </div>
 
     <div class="flex gap-2 mb-6">
@@ -24,11 +24,29 @@
       </.link>
     </div>
 
+    <form phx-change="filter" class="mb-6">
+      <div class="flex gap-3 items-center">
+        <input
+          type="text"
+          name="search"
+          value={@filters["search"]}
+          placeholder="Buscar por nombre o apellido..."
+          class="input input-bordered input-sm w-72"
+          phx-debounce="300"
+        />
+        <%= if @filters["search"] != "" do %>
+          <button type="button" phx-click="clear_filters" class="btn btn-sm btn-ghost">
+            Limpiar
+          </button>
+        <% end %>
+      </div>
+    </form>
+
     <%= if @donors == [] do %>
       <div class="text-center py-12 text-base-content/60">
         <.icon name="hero-users" class="h-16 w-16 mx-auto mb-4 opacity-50" />
         <p class="text-lg">
-          <%= if @tab == "archived", do: "No hay donantes archivados", else: "No hay donantes registrados" %>
+          <%= if @tab == "archived", do: "No hay colaboradores archivados", else: "No hay colaboradores registrados" %>
         </p>
       </div>
     <% else %>
@@ -52,27 +70,12 @@
                   </div>
                 </.link>
                 <div class="flex gap-2 shrink-0">
-                  <%= if @tab == "archived" do %>
-                    <button
-                      type="button"
-                      phx-click="unarchive"
-                      phx-value-id={donor.id}
-                      data-confirm="Estas seguro de desarchivar este donante?"
-                      class="btn btn-warning btn-sm"
-                    >
-                      Desarchivar
-                    </button>
-                  <% else %>
-                    <button
-                      type="button"
-                      phx-click="archive"
-                      phx-value-id={donor.id}
-                      data-confirm="Estas seguro de archivar este donante?"
-                      class="btn btn-warning btn-sm"
-                    >
-                      Archivar
-                    </button>
-                  <% end %>
+                  <.link
+                    navigate={~p"/admin/donors/#{donor}/edit"}
+                    class="btn btn-ghost btn-sm"
+                  >
+                    <.icon name="hero-pencil-square" class="size-4" /> Editar
+                  </.link>
                 </div>
               </div>
             </div>
@@ -83,28 +86,40 @@
       <%= if @total_pages > 1 do %>
         <div class="flex justify-center items-center gap-2 mt-8">
           <%= if @page > 1 do %>
-            <.link patch={build_pagination_path(@tab, @page - 1)} class="btn btn-sm btn-ghost">
+            <button
+              type="button"
+              phx-click="change_page"
+              phx-value-page={@page - 1}
+              class="btn btn-sm btn-ghost"
+            >
               <.icon name="hero-chevron-left" class="h-5 w-5" />
-            </.link>
+            </button>
           <% end %>
 
           <%= for page_num <- max(1, @page - 2)..min(@total_pages, @page + 2) do %>
-            <.link
-              patch={build_pagination_path(@tab, page_num)}
+            <button
+              type="button"
+              phx-click="change_page"
+              phx-value-page={page_num}
               class={["btn btn-sm", if(page_num == @page, do: "btn-primary", else: "btn-ghost")]}
             >
               <%= page_num %>
-            </.link>
+            </button>
           <% end %>
 
           <%= if @page < @total_pages do %>
-            <.link patch={build_pagination_path(@tab, @page + 1)} class="btn btn-sm btn-ghost">
+            <button
+              type="button"
+              phx-click="change_page"
+              phx-value-page={@page + 1}
+              class="btn btn-sm btn-ghost"
+            >
               <.icon name="hero-chevron-right" class="h-5 w-5" />
-            </.link>
+            </button>
           <% end %>
         </div>
         <p class="text-center text-sm text-base-content/60 mt-2">
-          Mostrando <%= length(@donors) %> de <%= @total_count %> donantes
+          Mostrando <%= length(@donors) %> de <%= @total_count %> colaboradores
         </p>
       <% end %>
     <% end %>

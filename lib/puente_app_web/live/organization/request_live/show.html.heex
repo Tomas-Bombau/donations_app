@@ -32,7 +32,7 @@
                 data-confirm="Eliminar este borrador?"
                 class="btn btn-error btn-outline btn-sm"
               >
-                Eliminar
+                <.icon name="hero-trash" class="size-4" /> Eliminar
               </button>
             </div>
           <% end %>
@@ -43,12 +43,12 @@
               data-confirm="Finalizar este pedido? Esta accion no se puede deshacer."
               class="btn btn-error btn-outline btn-sm"
             >
-              Finalizar
+              <.icon name="hero-check-circle" class="size-4" /> Finalizar
             </button>
           <% end %>
         </div>
 
-        <%= if @request.status in [:active, :completed] do %>
+        <%= if @request.status in [:active, :completed, :closed] do %>
           <div class="mb-4">
             <div class="flex justify-between text-sm mb-1">
               <span class="text-base-content/60">Recaudado</span>
@@ -85,7 +85,7 @@
         <%= if @request.reference_links != [] do %>
           <div class="divider"></div>
           <div>
-            <span class="text-sm text-base-content/60">Links de referencia</span>
+            <span class="text-sm font-semibold">Links de referencia</span>
             <ul class="mt-2 space-y-1">
               <%= for link <- @request.reference_links do %>
                 <li>
@@ -93,7 +93,7 @@
                     href={link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="link link-primary text-sm flex items-center gap-1"
+                    class="text-sm text-base-content/70 hover:underline flex items-center gap-1"
                   >
                     <.icon name="hero-arrow-top-right-on-square" class="h-4 w-4" />
                     {link}
@@ -121,16 +121,55 @@
 
           <% :active -> %>
             <div class="divider"></div>
-            <div class="alert alert-info">
+            <div class="alert bg-primary text-primary-content">
               <.icon name="hero-information-circle" class="stroke-current shrink-0 h-6 w-6" />
-              <span>Este pedido esta activo y visible para los donantes.</span>
+              <span>Este pedido esta activo y visible para quienes quieren ayudar.</span>
             </div>
 
           <% :completed -> %>
             <div class="divider"></div>
-            <div class="alert">
-              <.icon name="hero-check-circle" class="stroke-current shrink-0 h-6 w-6" />
-              <span>Este pedido ha sido finalizado.</span>
+            <div class="alert alert-warning">
+              <.icon name="hero-exclamation-triangle" class="stroke-current shrink-0 h-6 w-6" />
+              <div>
+                <p class="font-semibold">Rendicion pendiente</p>
+                <p class="text-sm">Contale a los donantes que hiciste con su aporte para poder crear un nuevo pedido.</p>
+              </div>
+            </div>
+            <div class="flex justify-end mt-4">
+              <.link navigate={~p"/organization/requests/#{@request}/close"} class="btn btn-primary">
+                <.icon name="hero-document-text" class="h-5 w-5 mr-1" />
+                Publicar rendicion
+              </.link>
+            </div>
+
+          <% :closed -> %>
+            <div class="divider"></div>
+            <div class="bg-base-300 rounded-lg p-4">
+              <h3 class="font-semibold mb-2 flex items-center gap-2">
+                <.icon name="hero-check-badge" class="h-5 w-5 text-success" />
+                Rendicion publicada
+              </h3>
+              <div class="mb-3">
+                <span class="text-sm text-base-content/60">Mensaje de agradecimiento</span>
+                <p class="mt-1 whitespace-pre-wrap">{@request.closing_message}</p>
+              </div>
+              <div class="mb-3">
+                <span class="text-sm text-base-content/60">Que hicimos con los fondos</span>
+                <p class="mt-1 whitespace-pre-wrap">{@request.outcome_description}</p>
+              </div>
+              <%= if @request.outcome_images != [] do %>
+                <div>
+                  <span class="text-sm text-base-content/60">Fotos</span>
+                  <div class="grid grid-cols-2 gap-2 mt-2">
+                    <%= for image <- @request.outcome_images do %>
+                      <img src={image} alt="Foto de rendicion" class="rounded-lg object-cover w-full h-32" />
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+              <p class="text-xs text-base-content/50 mt-3">
+                Publicado el {Calendar.strftime(@request.closed_at, "%d/%m/%Y a las %H:%M")}
+              </p>
             </div>
         <% end %>
       </div>

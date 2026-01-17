@@ -78,7 +78,7 @@ defmodule PuenteAppWeb.UserSessionControllerTest do
 
       response = html_response(conn, 200)
       assert response =~ "Iniciar sesion"
-      assert response =~ "invalido"
+      assert response =~ "inválidos"
     end
   end
 

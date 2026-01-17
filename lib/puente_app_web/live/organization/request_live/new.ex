@@ -23,10 +23,10 @@ defmodule PuenteAppWeb.Organization.RequestLive.New do
          |> put_flash(:error, "Ya tienes un pedido activo. Finaliza el actual antes de crear uno nuevo.")
          |> push_navigate(to: ~p"/organization/requests")}
 
-      not Requests.can_create_new_request?(organization.id) ->
+      Requests.has_pending_closure?(organization.id) ->
         {:ok,
          socket
-         |> put_flash(:error, "Debes esperar al menos 2 semanas desde tu ultimo pedido para crear uno nuevo.")
+         |> put_flash(:error, "Tienes un pedido finalizado pendiente de rendición. Complétala antes de crear uno nuevo.")
          |> push_navigate(to: ~p"/organization/requests")}
 
       true ->
@@ -78,10 +78,10 @@ defmodule PuenteAppWeb.Organization.RequestLive.New do
          |> put_flash(:error, "Ya tienes un pedido activo. Finaliza el actual antes de crear uno nuevo.")
          |> push_navigate(to: ~p"/organization/requests")}
 
-      {:error, :too_soon} ->
+      {:error, :pending_closure} ->
         {:noreply,
          socket
-         |> put_flash(:error, "Debes esperar al menos 2 semanas desde tu ultimo pedido para crear uno nuevo.")
+         |> put_flash(:error, "Tienes un pedido finalizado pendiente de rendición. Complétala antes de crear uno nuevo.")
          |> push_navigate(to: ~p"/organization/requests")}
 
       {:error, %Ecto.Changeset{} = changeset} ->

@@ -27,6 +27,37 @@ defmodule PuenteApp.Catalog do
   end
 
   @doc """
+  Returns a paginated list of categories with optional search filter.
+  Returns {categories, total_count}.
+  """
+  def list_categories_paginated(page, per_page, filters \\ %{}) do
+    search = Map.get(filters, "search", "")
+    offset = (page - 1) * per_page
+
+    query =
+      Category
+      |> apply_search_filter(search)
+
+    total_count = Repo.aggregate(query, :count, :id)
+
+    categories =
+      query
+      |> order_by(asc: :name)
+      |> limit(^per_page)
+      |> offset(^offset)
+      |> Repo.all()
+
+    {categories, total_count}
+  end
+
+  defp apply_search_filter(query, nil), do: query
+  defp apply_search_filter(query, ""), do: query
+  defp apply_search_filter(query, search) do
+    search_term = "%#{search}%"
+    where(query, [c], ilike(c.name, ^search_term))
+  end
+
+  @doc """
   Gets a single category.
 
   Raises `Ecto.NoResultsError` if the Category does not exist.

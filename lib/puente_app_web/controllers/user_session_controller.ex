@@ -20,12 +20,8 @@ defmodule PuenteAppWeb.UserSessionController do
       cond do
         is_nil(user.confirmed_at) ->
           conn
-          |> put_flash(
-            :error,
-            "Debes confirmar tu email antes de iniciar sesion. " <>
-              "<a href=\"/users/confirm\" class=\"underline\">Reenviar email de confirmacion</a>"
-            |> Phoenix.HTML.raw()
-          )
+          |> put_flash(:error, "Debes confirmar tu email antes de iniciar sesion.")
+          |> put_flash(:info, "Visita /users/confirm para reenviar el email de confirmacion.")
           |> render(:new, form: form)
 
         User.needs_admin_approval?(user) ->
@@ -43,7 +39,7 @@ defmodule PuenteAppWeb.UserSessionController do
 
       # In order to prevent user enumeration attacks, don't disclose whether the email is registered.
       conn
-      |> put_flash(:error, "Email o contrasena invalidos")
+      |> put_flash(:error, "Email o contraseña inválidos")
       |> render(:new, form: form)
     end
   end

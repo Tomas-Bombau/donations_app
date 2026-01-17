@@ -74,6 +74,7 @@ defmodule PuenteAppWeb.Organization.RequestLive.Show do
       :draft -> "badge-warning"
       :active -> "badge-success"
       :completed -> "badge-error"
+      :closed -> "badge-info"
     end
   end
 
@@ -82,6 +83,7 @@ defmodule PuenteAppWeb.Organization.RequestLive.Show do
       :draft -> "Borrador"
       :active -> "Activo"
       :completed -> "Finalizado"
+      :closed -> "Cerrado"
     end
   end
 

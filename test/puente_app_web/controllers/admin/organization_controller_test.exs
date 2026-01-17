@@ -2,21 +2,11 @@ defmodule PuenteAppWeb.Admin.OrganizationControllerTest do
   use PuenteAppWeb.ConnCase, async: true
 
   import PuenteApp.AccountsFixtures
-
-  alias PuenteApp.Organizations
+  import PuenteApp.OrganizationsFixtures
 
   describe "GET /admin/organizations/:id" do
     setup do
-      org_user = organization_user_fixture()
-      {:ok, organization} =
-        Organizations.create_organization(%{
-          user_id: org_user.id,
-          organization_name: "Test Organization",
-          organization_role: "presidente",
-          province: "CABA",
-          address: "123 Test St"
-        })
-      # The route expects USER id, not organization id
+      {org_user, organization} = organization_fixture()
       %{org_user: org_user, organization: organization}
     end
 

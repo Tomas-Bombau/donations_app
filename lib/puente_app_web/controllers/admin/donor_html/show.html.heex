@@ -2,10 +2,11 @@
 
 <main class="px-4 py-12 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-2xl">
-    <div class="mb-4">
-      <.link navigate={~p"/admin/donors"} class="text-sm text-base-content/60 hover:text-base-content">
-        &larr; Donantes
+    <div class="flex items-center gap-4 mb-8">
+      <.link navigate={~p"/admin/donors"} class="btn btn-ghost btn-sm btn-circle">
+        <.icon name="hero-chevron-left" class="h-5 w-5" />
       </.link>
+      <h1 class="text-2xl font-bold">Colaborador</h1>
     </div>
 
     <div class="card bg-base-200">
@@ -45,19 +46,7 @@
           </div>
         </div>
 
-        <div class="divider my-2"></div>
-
-        <div class="flex justify-end">
-          <.link
-            href={~p"/admin/donors/#{@donor}"}
-            method="delete"
-            data-confirm="Estas seguro de archivar este donante?"
-            class="btn btn-warning btn-sm"
-          >
-            Archivar donante
-          </.link>
         </div>
-      </div>
     </div>
   </div>
 </main>

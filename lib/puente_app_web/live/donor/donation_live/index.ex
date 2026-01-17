@@ -2,12 +2,13 @@ defmodule PuenteAppWeb.Donor.DonationLive.Index do
   use PuenteAppWeb, :live_view
 
   alias PuenteApp.Donations
+  alias PuenteApp.Requests
 
   @per_page 5
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, socket}
+    {:ok, assign(socket, show_closure: false, closure_request: nil)}
   end
 
   @impl true
@@ -25,6 +26,17 @@ defmodule PuenteAppWeb.Donor.DonationLive.Index do
      |> assign(:total_count, total_count)
      |> assign(:total_pages, total_pages)
      |> assign(:page_title, "Mis donaciones")}
+  end
+
+  @impl true
+  def handle_event("show_closure", %{"id" => request_id}, socket) do
+    request = Requests.get_request!(request_id)
+    {:noreply, assign(socket, show_closure: true, closure_request: request)}
+  end
+
+  @impl true
+  def handle_event("close_modal", _params, socket) do
+    {:noreply, assign(socket, show_closure: false, closure_request: nil)}
   end
 
   def build_pagination_path(page) do
@@ -46,19 +58,21 @@ defmodule PuenteAppWeb.Donor.DonationLive.Index do
     Calendar.strftime(datetime, "%d/%m/%Y")
   end
 
-  defp status_badge(status) do
+  defp request_status_badge(status) do
     case status do
-      :pending -> "badge-warning"
-      :completed -> "badge-success"
-      :cancelled -> "badge-error"
+      :draft -> "badge-ghost"
+      :active -> "badge-warning"
+      :completed -> "badge-error"
+      :closed -> "badge-success"
     end
   end
 
-  defp status_label(status) do
+  defp request_status_label(status) do
     case status do
-      :pending -> "Pendiente"
-      :completed -> "Completada"
-      :cancelled -> "Cancelada"
+      :draft -> "Borrador"
+      :active -> "En curso"
+      :completed -> "Pendiente de rendicion"
+      :closed -> "Rendicion disponible"
     end
   end
 end

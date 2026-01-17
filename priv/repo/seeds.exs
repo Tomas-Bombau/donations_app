@@ -55,7 +55,7 @@ IO.puts("Created super_admin: #{super_admin.email}")
 
 # Donor users
 donor1 = Seeds.create_user!(%{
-  email: "donor1@example.com",
+  email: "donante@example.com",
   password: "password1234",
   first_name: "Juan",
   last_name: "Perez",
@@ -77,7 +77,7 @@ IO.puts("Created donor: #{donor2.email}")
 # Requester users (approved)
 requester1 = %User{}
 |> User.registration_changeset(%{
-  email: "requester1@example.com",
+  email: "organizacion@example.com",
   password: "password1234",
   first_name: "Carlos",
   last_name: "Rodriguez",

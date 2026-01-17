@@ -8,30 +8,12 @@ defmodule PuenteApp.Organizations do
   alias PuenteApp.Organizations.Organization
 
   @doc """
-  Creates an organization profile.
-  """
-  def create_organization(attrs) do
-    %Organization{}
-    |> Organization.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
   Registers a new organization (without address and has_legal_entity).
   """
   def register_organization(attrs) do
     %Organization{}
     |> Organization.registration_changeset(attrs)
     |> Repo.insert()
-  end
-
-  @doc """
-  Updates an organization profile.
-  """
-  def update_organization(%Organization{} = organization, attrs) do
-    organization
-    |> Organization.changeset(attrs)
-    |> Repo.update()
   end
 
   @doc """

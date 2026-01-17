@@ -1,0 +1,102 @@
+<Layouts.flash_group flash={@flash} />
+
+<main class="px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-2xl">
+    <div class="flex items-center gap-4 mb-8">
+      <.link navigate={~p"/admin/donors"} class="btn btn-ghost btn-sm btn-circle">
+        <.icon name="hero-chevron-left" class="h-5 w-5" />
+      </.link>
+      <h1 class="text-2xl font-bold">Editar colaborador</h1>
+    </div>
+
+    <form phx-submit="save" phx-change="validate">
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h2 class="text-lg font-semibold">Datos del colaborador</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Nombre</span>
+              </label>
+              <input
+                type="text"
+                name="donor[first_name]"
+                value={@form[:first_name].value}
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Apellido</span>
+              </label>
+              <input
+                type="text"
+                name="donor[last_name]"
+                value={@form[:last_name].value}
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Email</span>
+              </label>
+              <input
+                type="email"
+                name="donor[email]"
+                value={@form[:email].value}
+                class="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Telefono</span>
+              </label>
+              <input
+                type="text"
+                name="donor[phone]"
+                value={@form[:phone].value}
+                class="input input-bordered w-full"
+              />
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="flex justify-end gap-2">
+            <.link navigate={~p"/admin/donors"} class="btn btn-ghost">
+              <.icon name="hero-x-mark" class="size-4" /> Cancelar
+            </.link>
+            <%= if @donor.archived do %>
+              <button
+                type="button"
+                phx-click="unarchive"
+                data-confirm="¿Estas seguro de desarchivar este colaborador? Recuperara acceso a la aplicacion."
+                class="btn btn-success"
+              >
+                <.icon name="hero-archive-box-arrow-down" class="size-4" /> Desarchivar
+              </button>
+            <% else %>
+              <button
+                type="button"
+                phx-click="archive"
+                data-confirm="¿Estas seguro de archivar este colaborador? Perdera acceso a la aplicacion."
+                class="btn btn-warning"
+              >
+                <.icon name="hero-archive-box" class="size-4" /> Archivar
+              </button>
+            <% end %>
+            <button type="submit" class="btn btn-primary">
+              <.icon name="hero-check" class="size-4" /> Guardar cambios
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</main>

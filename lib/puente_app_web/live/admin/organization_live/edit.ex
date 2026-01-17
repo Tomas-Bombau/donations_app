@@ -3,6 +3,7 @@ defmodule PuenteAppWeb.Admin.OrganizationLive.Edit do
 
   alias PuenteApp.Accounts
   alias PuenteApp.Organizations.Organization
+  alias PuenteAppWeb.Helpers.UploadHelpers
 
   @impl true
   def mount(_params, _session, socket) do
@@ -69,12 +70,10 @@ defmodule PuenteAppWeb.Admin.OrganizationLive.Edit do
      |> assign(:org_form, org_form)}
   end
 
-  @impl true
   def handle_event("cancel_upload", %{"ref" => ref}, socket) do
     {:noreply, cancel_upload(socket, :image, ref)}
   end
 
-  @impl true
   def handle_event("save", %{"user" => user_params, "organization" => org_params}, socket) do
     user = socket.assigns.user
 
@@ -91,34 +90,78 @@ defmodule PuenteAppWeb.Admin.OrganizationLive.Edit do
          |> put_flash(:info, "Organizacion actualizada correctamente.")
          |> push_navigate(to: ~p"/admin/organizations")}
 
+      {:error, changeset} ->
+        errors = format_changeset_errors(changeset)
+        {:noreply, put_flash(socket, :error, "Error al actualizar: #{errors}")}
+    end
+  end
+
+  def handle_event("archive", _params, socket) do
+    user = socket.assigns.user
+    current_user = socket.assigns.current_scope.user
+
+    case Accounts.archive_organization(user, current_user.id) do
+      {:ok, _user} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Organizacion archivada exitosamente.")
+         |> push_navigate(to: ~p"/admin/organizations")}
+
+      {:error, :invalid_role} ->
+        {:noreply, put_flash(socket, :error, "El usuario no es una organizacion.")}
+
       {:error, _changeset} ->
-        {:noreply, put_flash(socket, :error, "Error al actualizar la organizacion.")}
+        {:noreply, put_flash(socket, :error, "Error al archivar la organizacion.")}
+    end
+  end
+
+  def handle_event("unarchive", _params, socket) do
+    user = socket.assigns.user
+
+    case Accounts.unarchive_organization(user) do
+      {:ok, updated_user} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Organizacion desarchivada exitosamente.")
+         |> assign(:user, Accounts.get_user_with_profile!(updated_user.id))}
+
+      {:error, :invalid_role} ->
+        {:noreply, put_flash(socket, :error, "El usuario no es una organizacion.")}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Error al desarchivar la organizacion.")}
     end
   end
 
   defp maybe_upload_image(socket, org_params, organization) do
     case uploaded_entries(socket, :image) do
       {[_ | _], []} ->
-        # There are completed uploads
         uploaded_files =
           consume_uploaded_entries(socket, :image, fn %{path: path}, entry ->
-            # Ensure uploads directory exists
-            uploads_dir = Path.expand("./uploads/organizations")
-            File.mkdir_p!(uploads_dir)
+            with {:ok, detected_type} <- UploadHelpers.validate_magic_bytes(path),
+                 true <- UploadHelpers.extension_matches_type?(entry.client_name, detected_type) do
+              uploads_dir = Path.expand("./uploads/organizations")
+              File.mkdir_p!(uploads_dir)
 
-            # Generate unique filename using organization id
-            ext = Path.extname(entry.client_name)
-            filename = "#{organization.id}#{ext}"
-            dest = Path.join(uploads_dir, filename)
+              # Generate secure UUID-based filename
+              filename = UploadHelpers.generate_secure_filename(detected_type)
+              dest = Path.join(uploads_dir, filename)
 
-            # Copy the file
-            File.cp!(path, dest)
+              # Delete old image if exists
+              if organization && organization.image_path do
+                old_path = Path.expand(".#{organization.image_path}")
+                File.rm(old_path)
+              end
 
-            {:ok, "/uploads/organizations/#{filename}"}
+              File.cp!(path, dest)
+              {:ok, "/uploads/organizations/#{filename}"}
+            else
+              _ -> {:postpone, :invalid_file}
+            end
           end)
 
         case uploaded_files do
-          [image_path | _] -> Map.put(org_params, "image_path", image_path)
+          [image_path | _] when is_binary(image_path) -> Map.put(org_params, "image_path", image_path)
           _ -> org_params
         end
 
@@ -131,4 +174,14 @@ defmodule PuenteAppWeb.Admin.OrganizationLive.Edit do
   defp error_to_string(:not_accepted), do: "Tipo de archivo no permitido. Solo JPG, PNG o WebP"
   defp error_to_string(:too_many_files), do: "Solo se permite un archivo"
   defp error_to_string(_), do: "Error al subir el archivo"
+
+  defp format_changeset_errors(changeset) do
+    Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
+      Regex.replace(~r"%{(\w+)}", msg, fn _, key ->
+        opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
+      end)
+    end)
+    |> Enum.map(fn {field, errors} -> "#{field}: #{Enum.join(errors, ", ")}" end)
+    |> Enum.join("; ")
+  end
 end

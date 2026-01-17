@@ -1,0 +1,150 @@
+<Layouts.flash_group flash={@flash} />
+
+<main class="px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-2xl space-y-8">
+    <div class="text-center">
+      <.header>
+        Configuracion
+      </.header>
+    </div>
+
+    <!-- Perfil -->
+    <div class="card bg-base-200">
+      <div class="card-body">
+        <h2 class="card-title text-lg">Mi Perfil</h2>
+        <.form for={@profile_form} phx-submit="save_profile" phx-change="validate_profile" id="profile_form">
+          <!-- Foto de perfil -->
+          <div class="mb-6">
+            <p class="text-sm font-medium text-base-content/70 mb-2">Foto de perfil</p>
+            <div class="flex flex-wrap gap-4 items-start">
+              <!-- Current image or initials -->
+              <%= if @user.image_path do %>
+                <div class="flex items-center gap-3">
+                  <img
+                    src={@user.image_path}
+                    alt="Foto actual"
+                    class="w-20 h-20 object-cover rounded-full"
+                  />
+                  <span class="text-sm text-base-content/60">Foto actual</span>
+                </div>
+              <% else %>
+                <div class="flex items-center gap-3">
+                  <div class="bg-primary text-primary-content rounded-full w-20 h-20 flex items-center justify-center">
+                    <span class="text-2xl"><%= String.first(@user.first_name) <> String.first(@user.last_name) %></span>
+                  </div>
+                  <span class="text-sm text-base-content/60">Sin foto</span>
+                </div>
+              <% end %>
+
+              <!-- Upload area -->
+              <div class="flex-1 min-w-[200px]">
+                <div
+                  class="border-2 border-dashed border-base-content/20 rounded-lg p-4 text-center hover:border-primary transition-colors"
+                  phx-drop-target={@uploads.image.ref}
+                >
+                  <.live_file_input upload={@uploads.image} class="hidden" />
+                  <label for={@uploads.image.ref} class="cursor-pointer">
+                    <.icon name="hero-photo" class="h-8 w-8 mx-auto text-base-content/40 mb-1" />
+                    <p class="text-sm text-base-content/60">
+                      Arrastra o <span class="text-primary">selecciona</span>
+                    </p>
+                    <p class="text-xs text-base-content/40">JPG, PNG, WebP (max 5MB)</p>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Preview uploaded files -->
+              <%= for entry <- @uploads.image.entries do %>
+                <div class="flex items-center gap-3 p-2 bg-base-300 rounded-lg">
+                  <.live_img_preview entry={entry} class="w-16 h-16 object-cover rounded-full" />
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium truncate">{entry.client_name}</p>
+                    <p class="text-xs text-base-content/60">{trunc(entry.client_size / 1024)} KB</p>
+                  </div>
+                  <button
+                    type="button"
+                    phx-click="cancel_upload"
+                    phx-value-ref={entry.ref}
+                    class="btn btn-ghost btn-sm btn-circle"
+                  >
+                    <.icon name="hero-x-mark" class="h-4 w-4" />
+                  </button>
+                </div>
+
+                <%= for err <- upload_errors(@uploads.image, entry) do %>
+                  <p class="text-error text-sm">{error_to_string(err)}</p>
+                <% end %>
+              <% end %>
+
+              <%= for err <- upload_errors(@uploads.image) do %>
+                <p class="text-error text-sm">{error_to_string(err)}</p>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Profile Fields -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <.input
+              field={@profile_form[:first_name]}
+              type="text"
+              label="Nombre"
+              required
+            />
+            <.input
+              field={@profile_form[:last_name]}
+              type="text"
+              label="Apellido"
+              required
+            />
+            <.input
+              field={@profile_form[:phone]}
+              type="tel"
+              label="Telefono"
+            />
+            <.input
+              field={@profile_form[:email]}
+              type="email"
+              label="Email"
+              required
+            />
+          </div>
+          <div class="mt-4">
+            <.button variant="primary" phx-disable-with="Guardando...">
+              Guardar Perfil
+            </.button>
+          </div>
+        </.form>
+      </div>
+    </div>
+
+    <!-- Contrasena -->
+    <div class="card bg-base-200">
+      <div class="card-body">
+        <h2 class="card-title text-lg">Cambiar Contrasena</h2>
+        <.form for={@password_form} phx-submit="save_password" phx-change="validate_password" id="password_form">
+          <.input
+            field={@password_form[:password]}
+            type="password"
+            label="Nueva contrasena"
+            autocomplete="new-password"
+            required
+          />
+          <.input
+            field={@password_form[:password_confirmation]}
+            type="password"
+            label="Confirmar nueva contrasena"
+            autocomplete="new-password"
+            required
+          />
+          <div class="mt-4">
+            <.button variant="primary" phx-disable-with="Guardando...">
+              Guardar Contrasena
+            </.button>
+          </div>
+        </.form>
+      </div>
+    </div>
+  </div>
+</main>

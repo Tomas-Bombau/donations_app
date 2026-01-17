@@ -35,7 +35,7 @@ defmodule PuenteAppWeb.UserSettingsController do
     case Accounts.update_user_password(user, user_params) do
       {:ok, {user, _}} ->
         conn
-        |> put_flash(:info, "Contrasena actualizada correctamente.")
+        |> put_flash(:info, "Contraseña actualizada correctamente.")
         |> put_session(:user_return_to, ~p"/users/settings")
         |> UserAuth.log_in_user(user)
 

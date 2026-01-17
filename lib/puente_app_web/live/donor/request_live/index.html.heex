@@ -2,7 +2,7 @@
 
 <main class="px-4 py-12 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-4xl">
-    <h1 class="text-2xl font-bold mb-8">Donaciones</h1>
+    <h1 class="text-2xl font-bold mb-8">Oportunidades de ayuda</h1>
     
 <!-- Tabs -->
     <div class="flex gap-2 mb-6">
@@ -16,7 +16,7 @@
         navigate={~p"/donor/donations"}
         class="btn btn-sm gap-2 btn-ghost"
       >
-        Donaciones realizadas
+        Mis aportes
       </.link>
     </div>
     
@@ -50,7 +50,9 @@
         </select>
 
         <div class="flex-1"></div>
-        <.link patch={~p"/donor/requests"} class="btn btn-sm btn-ghost">Limpiar filtros</.link>
+        <.link patch={~p"/donor/requests"} class="btn btn-sm btn-ghost">
+          <.icon name="hero-arrow-path" class="size-4" /> Limpiar filtros
+        </.link>
       </div>
     </form>
     
@@ -65,27 +67,29 @@
         <%= for request <- @requests do %>
           <div class="card bg-base-200 shadow-sm">
             <div class="card-body py-4 px-4">
-              <!-- Header: Vence + Donar arriba a la derecha -->
-              <div class="flex justify-between items-center">
-                <div class="flex items-center gap-2">
+              <!-- Header: Org + Título + Vence + Ayudar -->
+              <div class="flex justify-between items-start gap-4">
+                <.link navigate={~p"/donor/requests/#{request}"} class="flex items-center gap-2 min-w-0 flex-1">
                   <%= if request.organization.image_path do %>
                     <img
                       src={request.organization.image_path}
                       alt="Imagen"
-                      class="w-8 h-8 object-cover rounded-lg"
+                      class="w-8 h-8 object-cover rounded-lg shrink-0"
                     />
                   <% else %>
-                    <div class="w-8 h-8 bg-base-300 rounded-lg flex items-center justify-center">
+                    <div class="w-8 h-8 bg-base-300 rounded-lg flex items-center justify-center shrink-0">
                       <.icon name="hero-building-office" class="h-4 w-4 text-base-content/30" />
                     </div>
                   <% end %>
-                  <p class="font-bold text-lg">
-                    {request.organization.organization_name}
+                  <p class="text-lg truncate">
+                    <span class="font-bold">{request.organization.organization_name}</span>
+                    <span class="text-base-content/50"> - </span>
+                    <span class="text-base-content/70">{request.title}</span>
                   </p>
-                </div>
-                <div class="flex items-center gap-3">
+                </.link>
+                <div class="flex items-center gap-3 shrink-0">
                   <span class="text-sm text-base-content/60">
-                    Vence: {format_date(request.deadline)}
+                    {days_until_deadline(request.deadline)}
                   </span>
                   <button
                     type="button"
@@ -93,17 +97,11 @@
                     phx-value-id={request.id}
                     class="btn btn-primary btn-sm"
                   >
-                    Donar
+                    Ayudar
                   </button>
                 </div>
               </div>
               <.link navigate={~p"/donor/requests/#{request}"} class="block">
-                <!-- Título - Categoría en la misma línea -->
-                <div class="flex items-center gap-2">
-                  <h3 class="font-medium">{request.title}</h3>
-                  <span class="text-base-content/50">-</span>
-                  <span class="text-base-content/60">{request.category.name}</span>
-                </div>
                 <p class="text-sm text-base-content/60 mt-2 line-clamp-2">
                   {request.description}
                 </p>
@@ -166,7 +164,7 @@
 <%= if @show_modal && @selected_request do %>
   <div class="modal modal-open">
     <div class="modal-box">
-      <h3 class="font-bold text-lg mb-4">Realizar donacion</h3>
+      <h3 class="font-bold text-lg mb-4">Quiero ayudar</h3>
       
 <!-- Payment info -->
       <div class="bg-base-300 rounded-lg p-4 mb-4">
@@ -188,7 +186,7 @@
       <.form for={@form} phx-change="validate_donation" phx-submit="save_donation">
         <div class="form-control">
           <label class="label">
-            <span class="label-text">Monto a donar</span>
+            <span class="label-text">Monto de mi aporte</span>
           </label>
           <input
             type="number"
@@ -210,8 +208,12 @@
         </div>
 
         <div class="modal-action">
-          <button type="button" phx-click="close_modal" class="btn btn-ghost">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Aceptar</button>
+          <button type="button" phx-click="close_modal" class="btn btn-ghost">
+            <.icon name="hero-x-mark" class="size-4" /> Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <.icon name="hero-check" class="size-4" /> Aceptar
+          </button>
         </div>
       </.form>
     </div>

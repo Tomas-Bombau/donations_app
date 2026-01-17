@@ -9,35 +9,39 @@ defmodule PuenteApp.Donations do
   alias PuenteApp.Requests
 
   @doc """
-  Creates a donation with pending status.
+  Creates a donation and updates the request's amount_raised.
+  Returns {:error, :request_not_active} if the request is not active.
   """
   def create_donation(attrs) do
-    %Donation{}
-    |> Donation.create_changeset(attrs)
-    |> Repo.insert()
+    Repo.transact(fn ->
+      case Repo.insert(Donation.create_changeset(%Donation{}, attrs)) do
+        {:ok, donation} ->
+          request = Requests.get_request!(donation.request_id)
+
+          case Requests.add_donation(request, donation.amount) do
+            {:ok, _updated_request} ->
+              {:ok, donation}
+
+            {:error, :request_not_active} ->
+              Repo.rollback(:request_not_active)
+
+            {:error, reason} ->
+              Repo.rollback(reason)
+          end
+
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+      end
+    end)
   end
 
   @doc """
-  Gets a single donation.
-
-  Raises `Ecto.NoResultsError` if the Donation does not exist.
+  Gets a single donation. Raises if not found.
   """
   def get_donation!(id) do
     Donation
-    |> preload(request: [:category, organization: :user])
+    |> preload([:donor, request: [:category, organization: :user]])
     |> Repo.get!(id)
-  end
-
-  @doc """
-  Gets a donation for a specific donor.
-
-  Raises `Ecto.NoResultsError` if the Donation does not exist or doesn't belong to the donor.
-  """
-  def get_donation_for_donor!(id, donor_id) do
-    Donation
-    |> where(id: ^id, donor_id: ^donor_id)
-    |> preload(request: [:category, organization: :user])
-    |> Repo.one!()
   end
 
   @doc """
@@ -63,55 +67,6 @@ defmodule PuenteApp.Donations do
       |> Repo.all()
 
     {donations, total_count}
-  end
-
-  @doc """
-  Lists donations for a request.
-  """
-  def list_donations_for_request(request_id) do
-    Donation
-    |> where(request_id: ^request_id)
-    |> preload(:donor)
-    |> order_by(desc: :inserted_at)
-    |> Repo.all()
-  end
-
-  @doc """
-  Completes a donation (pending -> completed).
-  Updates the request's amount_raised.
-  """
-  def complete_donation(%Donation{status: :pending} = donation) do
-    donation = Repo.preload(donation, :request)
-
-    Repo.transaction(fn ->
-      with {:ok, updated_donation} <- update_status(donation, :completed),
-           {:ok, _request} <- Requests.add_donation(donation.request, donation.amount) do
-        updated_donation
-      else
-        {:error, reason} -> Repo.rollback(reason)
-      end
-    end)
-  end
-
-  def complete_donation(%Donation{}) do
-    {:error, :invalid_status}
-  end
-
-  @doc """
-  Cancels a donation (pending -> cancelled).
-  """
-  def cancel_donation(%Donation{status: :pending} = donation) do
-    update_status(donation, :cancelled)
-  end
-
-  def cancel_donation(%Donation{}) do
-    {:error, :invalid_status}
-  end
-
-  defp update_status(donation, status) do
-    donation
-    |> Donation.status_changeset(status)
-    |> Repo.update()
   end
 
   @doc """

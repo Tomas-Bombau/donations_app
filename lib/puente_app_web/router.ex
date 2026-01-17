@@ -96,6 +96,7 @@ defmodule PuenteAppWeb.Router do
       live "/organizations", OrganizationLive.Index, :index
       live "/organizations/:id/edit", OrganizationLive.Edit, :edit
       live "/donors", DonorLive.Index, :index
+      live "/donors/:id/edit", DonorLive.Edit, :edit
       live "/categories", CategoryLive.Index, :index
       live "/categories/new", CategoryLive.Index, :new
       live "/categories/:id/edit", CategoryLive.Index, :edit
@@ -114,6 +115,7 @@ defmodule PuenteAppWeb.Router do
       live "/requests/new", RequestLive.New, :new
       live "/requests/:id", RequestLive.Show, :show
       live "/requests/:id/edit", RequestLive.Edit, :edit
+      live "/requests/:id/close", RequestLive.Close, :close
     end
   end
 
@@ -123,6 +125,7 @@ defmodule PuenteAppWeb.Router do
 
     live_session :donor,
       on_mount: [{PuenteAppWeb.UserAuth, :donor}] do
+      live "/settings", SettingsLive, :edit
       live "/requests", RequestLive.Index, :index
       live "/requests/:id", RequestLive.Show, :show
       live "/donations", DonationLive.Index, :index

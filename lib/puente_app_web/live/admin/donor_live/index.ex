@@ -5,10 +5,6 @@ defmodule PuenteAppWeb.Admin.DonorLive.Index do
 
   @per_page 5
 
-  def build_pagination_path(tab, page) do
-    "/admin/donors?" <> URI.encode_query(%{tab: tab, page: page})
-  end
-
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket}
@@ -19,26 +15,77 @@ defmodule PuenteAppWeb.Admin.DonorLive.Index do
     tab = params["tab"] || "active"
     page = String.to_integer(params["page"] || "1")
 
-    {donors, total_count} = fetch_donors(tab, page)
+    filters = %{
+      "search" => params["search"] || ""
+    }
+
+    {donors, total_count} = fetch_donors(tab, page, filters)
     total_pages = max(1, ceil(total_count / @per_page))
 
     {:noreply,
      socket
      |> assign(:tab, tab)
      |> assign(:page, page)
+     |> assign(:filters, filters)
      |> assign(:donors, donors)
      |> assign(:total_count, total_count)
      |> assign(:total_pages, total_pages)}
   end
 
   @impl true
+  def handle_event("filter", params, socket) do
+    filters = %{
+      "search" => params["search"] || ""
+    }
+
+    {donors, total_count} = fetch_donors(socket.assigns.tab, 1, filters)
+    total_pages = max(1, ceil(total_count / @per_page))
+
+    {:noreply,
+     socket
+     |> assign(:filters, filters)
+     |> assign(:donors, donors)
+     |> assign(:total_count, total_count)
+     |> assign(:total_pages, total_pages)
+     |> assign(:page, 1)}
+  end
+
+  @impl true
+  def handle_event("clear_filters", _params, socket) do
+    filters = %{"search" => ""}
+
+    {donors, total_count} = fetch_donors(socket.assigns.tab, 1, filters)
+    total_pages = max(1, ceil(total_count / @per_page))
+
+    {:noreply,
+     socket
+     |> assign(:filters, filters)
+     |> assign(:donors, donors)
+     |> assign(:total_count, total_count)
+     |> assign(:total_pages, total_pages)
+     |> assign(:page, 1)}
+  end
+
+  @impl true
+  def handle_event("change_page", %{"page" => page}, socket) do
+    page = String.to_integer(page)
+    {donors, total_count} = fetch_donors(socket.assigns.tab, page, socket.assigns.filters)
+
+    {:noreply,
+     socket
+     |> assign(:page, page)
+     |> assign(:donors, donors)
+     |> assign(:total_count, total_count)}
+  end
+
+  @impl true
   def handle_event("archive", %{"id" => id}, socket) do
-    donor = Accounts.get_user!(id)
+    donor = Accounts.get_donor_user!(id)
     current_user = socket.assigns.current_scope.user
 
-    case Accounts.archive_user(donor, current_user.id) do
+    case Accounts.archive_donor(donor, current_user.id) do
       {:ok, _user} ->
-        {donors, total_count} = fetch_donors(socket.assigns.tab, socket.assigns.page)
+        {donors, total_count} = fetch_donors(socket.assigns.tab, socket.assigns.page, socket.assigns.filters)
 
         {:noreply,
          socket
@@ -47,18 +94,24 @@ defmodule PuenteAppWeb.Admin.DonorLive.Index do
          |> assign(:total_count, total_count)
          |> assign(:total_pages, max(1, ceil(total_count / @per_page)))}
 
+      {:error, :invalid_role} ->
+        {:noreply, put_flash(socket, :error, "El usuario no es un donante.")}
+
       {:error, _changeset} ->
         {:noreply, put_flash(socket, :error, "Error al archivar el donante.")}
     end
+  rescue
+    Ecto.NoResultsError ->
+      {:noreply, put_flash(socket, :error, "Donante no encontrado.")}
   end
 
   @impl true
   def handle_event("unarchive", %{"id" => id}, socket) do
-    donor = Accounts.get_user!(id)
+    donor = Accounts.get_donor_user!(id)
 
-    case Accounts.unarchive_user(donor) do
+    case Accounts.unarchive_donor(donor) do
       {:ok, _user} ->
-        {donors, total_count} = fetch_donors(socket.assigns.tab, socket.assigns.page)
+        {donors, total_count} = fetch_donors(socket.assigns.tab, socket.assigns.page, socket.assigns.filters)
 
         {:noreply,
          socket
@@ -67,15 +120,21 @@ defmodule PuenteAppWeb.Admin.DonorLive.Index do
          |> assign(:total_count, total_count)
          |> assign(:total_pages, max(1, ceil(total_count / @per_page)))}
 
+      {:error, :invalid_role} ->
+        {:noreply, put_flash(socket, :error, "El usuario no es un donante.")}
+
       {:error, _changeset} ->
         {:noreply, put_flash(socket, :error, "Error al desarchivar el donante.")}
     end
+  rescue
+    Ecto.NoResultsError ->
+      {:noreply, put_flash(socket, :error, "Donante no encontrado.")}
   end
 
-  defp fetch_donors(tab, page) do
+  defp fetch_donors(tab, page, filters) do
     case tab do
-      "archived" -> Accounts.list_archived_users_by_role_paginated(:donor, page, @per_page)
-      _ -> Accounts.list_users_by_role_paginated(:donor, page, @per_page)
+      "archived" -> Accounts.list_archived_users_by_role_paginated(:donor, page, @per_page, filters)
+      _ -> Accounts.list_users_by_role_paginated(:donor, page, @per_page, filters)
     end
   end
 end

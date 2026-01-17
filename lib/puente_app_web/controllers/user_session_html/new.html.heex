@@ -19,7 +19,7 @@
       </.header>
     </div>
 
-    <div :if={local_mail_adapter?()} class="alert alert-info">
+    <div :if={local_mail_adapter?()} class="alert bg-primary text-primary-content">
       <.icon name="hero-information-circle" class="size-6 shrink-0" />
       <div>
         <p>Estas usando el adaptador de mail local.</p>
@@ -41,7 +41,7 @@
       <.input
         field={f[:password]}
         type="password"
-        label="Contrasena"
+        label="Contraseña"
         autocomplete="current-password"
       />
       <.button class="btn btn-primary w-full" name={@form[:remember_me].name} value="true">

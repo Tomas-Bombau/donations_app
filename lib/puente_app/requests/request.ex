@@ -5,7 +5,7 @@ defmodule PuenteApp.Requests.Request do
   alias PuenteApp.Organizations.Organization
   alias PuenteApp.Catalog.Category
 
-  @statuses [:draft, :active, :completed]
+  @statuses [:draft, :active, :completed, :closed]
 
   schema "requests" do
     field :title, :string
@@ -15,6 +15,12 @@ defmodule PuenteApp.Requests.Request do
     field :reference_links, {:array, :string}, default: []
     field :deadline, :date
     field :status, Ecto.Enum, values: @statuses, default: :draft
+
+    # Closure/accountability fields
+    field :closing_message, :string
+    field :outcome_description, :string
+    field :outcome_images, {:array, :string}, default: []
+    field :closed_at, :utc_datetime
 
     belongs_to :organization, Organization
     belongs_to :category, Category
@@ -28,7 +34,8 @@ defmodule PuenteApp.Requests.Request do
     [
       {"Borrador", :draft},
       {"Activo", :active},
-      {"Finalizado", :completed}
+      {"Finalizado", :completed},
+      {"Cerrado", :closed}
     ]
   end
 
@@ -87,6 +94,36 @@ defmodule PuenteApp.Requests.Request do
       |> change()
       |> add_error(:status, "solo se pueden finalizar pedidos activos")
     end
+  end
+
+  @doc """
+  Changeset for closing a request with accountability report (completed -> closed).
+  """
+  def close_changeset(request, attrs) do
+    if request.status == :completed do
+      request
+      |> cast(attrs, [:closing_message, :outcome_description, :outcome_images])
+      |> validate_required([:closing_message, :outcome_description])
+      |> validate_length(:closing_message, max: 2000)
+      |> validate_length(:outcome_description, max: 5000)
+      |> put_change(:status, :closed)
+      |> put_change(:closed_at, DateTime.utc_now(:second))
+    else
+      request
+      |> change()
+      |> add_error(:status, "solo se pueden cerrar pedidos finalizados")
+    end
+  end
+
+  @doc """
+  Changeset for tracking closure form changes (for LiveView forms).
+  """
+  def closure_changeset(request, attrs \\ %{}) do
+    request
+    |> cast(attrs, [:closing_message, :outcome_description, :outcome_images])
+    |> validate_required([:closing_message, :outcome_description])
+    |> validate_length(:closing_message, max: 2000)
+    |> validate_length(:outcome_description, max: 5000)
   end
 
   @doc """

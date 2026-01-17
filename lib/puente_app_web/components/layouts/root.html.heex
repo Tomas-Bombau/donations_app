@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <.live_title default="DonaApp" suffix=" - Conectando Donaciones">
+    <.live_title default="Puente" suffix=" - Tendiendo puentes de solidaridad">
       {assigns[:page_title]}
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
@@ -35,8 +35,13 @@
     <div class="navbar bg-base-100 shadow-sm px-4 sm:px-6 lg:px-8 sticky top-0 z-50">
       <div class="navbar-start">
         <a href="/" class="flex items-center gap-2 text-xl font-bold text-primary">
-          <.icon name="hero-heart" class="h-8 w-8" />
-          DonaApp
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 17h18"/>
+            <path d="M6 17v-4"/>
+            <path d="M18 17v-4"/>
+            <path d="M6 13c0-4 6-8 6-8s6 4 6 8"/>
+          </svg>
+          Puente
         </a>
       </div>
       <div class="navbar-center">
@@ -52,9 +57,22 @@
         <%= if @current_scope do %>
           <div class="dropdown dropdown-end">
             <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar placeholder">
-              <div class="bg-primary text-primary-content rounded-full w-10">
-                <span class="text-sm"><%= String.first(@current_scope.user.first_name) <> String.first(@current_scope.user.last_name) %></span>
-              </div>
+              <%= cond do %>
+                <% @current_scope.user.role == :organization &&
+                   @current_scope.user.organization &&
+                   @current_scope.user.organization.image_path -> %>
+                  <div class="w-10 rounded-full">
+                    <img src={@current_scope.user.organization.image_path} alt="Avatar" />
+                  </div>
+                <% @current_scope.user.image_path -> %>
+                  <div class="w-10 rounded-full">
+                    <img src={@current_scope.user.image_path} alt="Avatar" />
+                  </div>
+                <% true -> %>
+                  <div class="bg-primary text-primary-content rounded-full w-10">
+                    <span class="text-sm"><%= String.first(@current_scope.user.first_name) <> String.first(@current_scope.user.last_name) %></span>
+                  </div>
+              <% end %>
             </div>
             <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
               <li class="menu-title">
@@ -76,7 +94,7 @@
                 </li>
               <% else %>
                 <li class="mt-2">
-                  <.link href={~p"/users/settings"}>
+                  <.link href={~p"/donor/settings"}>
                     <.icon name="hero-cog-6-tooth" class="h-4 w-4" />
                     Configuracion
                   </.link>

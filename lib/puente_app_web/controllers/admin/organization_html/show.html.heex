@@ -2,50 +2,46 @@
 
 <main class="px-4 py-12 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-2xl">
-    <div class="mb-4">
-      <.link
-        navigate={~p"/admin/organizations"}
-        class="text-sm text-base-content/60 hover:text-base-content"
-      >
-        &larr; Organizaciones
+    <div class="flex items-center gap-4 mb-8">
+      <.link navigate={~p"/admin/organizations"} class="btn btn-ghost btn-sm btn-circle">
+        <.icon name="hero-chevron-left" class="h-5 w-5" />
       </.link>
+      <h1 class="text-2xl font-bold">Organizacion</h1>
     </div>
 
     <div class="card bg-base-200">
       <div class="card-body">
-        <div class="flex justify-between items-start mb-4">
-          <div class="flex gap-4">
-            <%= if @organization.organization && @organization.organization.image_path do %>
-              <img
-                src={@organization.organization.image_path}
-                alt="Imagen de la organizacion"
-                class="w-16 h-16 object-cover rounded-lg shrink-0"
-              />
-            <% else %>
-              <div class="w-16 h-16 bg-base-300 rounded-lg flex items-center justify-center shrink-0">
-                <.icon name="hero-building-office" class="h-8 w-8 text-base-content/30" />
-              </div>
-            <% end %>
-            <div>
-              <h1 class="text-xl font-bold">
-                {if @organization.organization,
-                  do: @organization.organization.organization_name,
-                  else: "Sin nombre"}
-              </h1>
-              <p class="text-base-content/60 break-all text-sm">
-                {@organization.first_name} {@organization.last_name} · {@organization.email}
-              </p>
+        <div class="flex gap-4 mb-4">
+          <%= if @organization.organization && @organization.organization.image_path do %>
+            <img
+              src={@organization.organization.image_path}
+              alt="Imagen de la organizacion"
+              class="w-16 h-16 object-cover rounded-lg shrink-0"
+            />
+          <% else %>
+            <div class="w-16 h-16 bg-base-300 rounded-lg flex items-center justify-center shrink-0">
+              <.icon name="hero-building-office" class="h-8 w-8 text-base-content/30" />
             </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <%= if @organization.admin_approved_at do %>
-              <span class="badge badge-success badge-sm">Aprobada</span>
-            <% else %>
-              <span class="badge badge-warning badge-sm">Pendiente</span>
-            <% end %>
-            <%= if @organization.organization && @organization.organization.has_legal_entity do %>
-              <span class="badge badge-info badge-sm">Personeria juridica</span>
-            <% end %>
+          <% end %>
+          <div class="flex-1 min-w-0">
+            <h1 class="text-xl font-bold">
+              {if @organization.organization,
+                do: @organization.organization.organization_name,
+                else: "Sin nombre"}
+            </h1>
+            <p class="text-base-content/60 text-sm">
+              {@organization.first_name} {@organization.last_name} · {@organization.email}
+            </p>
+            <div class="flex flex-wrap gap-2 mt-2">
+              <%= if @organization.admin_approved_at do %>
+                <span class="badge badge-success badge-sm">Aprobada</span>
+              <% else %>
+                <span class="badge badge-warning badge-sm">Pendiente</span>
+              <% end %>
+              <%= if @organization.organization && @organization.organization.has_legal_entity do %>
+                <span class="badge badge-info badge-sm">Personeria juridica</span>
+              <% end %>
+            </div>
           </div>
         </div>
         
@@ -61,9 +57,9 @@
                 {@organization.first_name} {@organization.last_name}
               </p>
             </div>
-            <div>
+            <div class="min-w-0">
               <p class="text-xs text-base-content/60">Email</p>
-              <p class="font-medium text-sm">{@organization.email}</p>
+              <p class="font-medium text-sm break-all">{@organization.email}</p>
             </div>
             <div>
               <p class="text-xs text-base-content/60">Telefono</p>
@@ -125,12 +121,12 @@
             <h3 class="text-xs font-semibold text-base-content/60 uppercase tracking-wide mb-2">
               Redes sociales
             </h3>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <div>
+            <div class="grid grid-cols-4 gap-4">
+              <div class="col-span-2">
                 <p class="text-xs text-base-content/60">Facebook</p>
                 <p class="font-medium text-sm">{@organization.organization.facebook || "-"}</p>
               </div>
-              <div>
+              <div class="col-span-2">
                 <p class="text-xs text-base-content/60">Instagram</p>
                 <p class="font-medium text-sm">{@organization.organization.instagram || "-"}</p>
               </div>
@@ -198,19 +194,7 @@
           </div>
         <% end %>
 
-        <div class="divider my-2"></div>
-
-        <div class="flex justify-end">
-          <.link
-            href={~p"/admin/organizations/#{@organization}"}
-            method="delete"
-            data-confirm="Estas seguro de archivar esta organizacion?"
-            class="btn btn-warning btn-sm"
-          >
-            Archivar organizacion
-          </.link>
         </div>
-      </div>
     </div>
   </div>
 </main>

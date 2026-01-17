@@ -4,7 +4,7 @@
   <div class="mx-auto max-w-sm">
     <div class="text-center mb-6">
       <.header>
-        Crear cuenta de donante
+        Quiero ayudar
         <:subtitle>
           Ya tenes una cuenta?
           <.link navigate={~p"/users/log-in"} class="font-semibold text-primary hover:underline">
@@ -48,7 +48,7 @@
           <.input
             field={f[:password]}
             type="password"
-            label="Contrasena"
+            label="Contraseña"
             autocomplete="new-password"
             required
             id="password"
@@ -58,14 +58,14 @@
           <.input
             field={f[:password_confirmation]}
             type="password"
-            label="Confirmar contrasena"
+            label="Confirmar contraseña"
             autocomplete="new-password"
             required
             id="password_confirmation"
           />
 
           <div id="password-match-error" class="text-error text-sm mt-1 hidden">
-            Las contrasenas no coinciden
+            Las contraseñas no coinciden
           </div>
         </div>
       </div>

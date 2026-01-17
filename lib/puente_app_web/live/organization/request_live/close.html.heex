@@ -1,0 +1,136 @@
+<Layouts.flash_group flash={@flash} />
+
+<main class="px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-2xl">
+    <div class="mb-4">
+      <.link navigate={~p"/organization/requests/#{@request}"} class="text-sm text-base-content/60 hover:text-base-content">
+        &larr; Volver al pedido
+      </.link>
+    </div>
+
+    <div class="card bg-base-200">
+      <div class="card-body">
+        <h1 class="text-xl font-bold mb-2">Publicar rendicion</h1>
+        <p class="text-base-content/60 mb-6">
+          Contale a los donantes que hiciste con su aporte. Esto genera confianza y transparencia.
+        </p>
+
+        <!-- Request summary -->
+        <div class="bg-base-300 rounded-lg p-4 mb-6">
+          <h3 class="font-semibold">{@request.title}</h3>
+          <p class="text-sm text-base-content/60 mt-1">
+            Recaudado: {format_currency(@request.amount_raised)} de {format_currency(@request.amount)}
+          </p>
+        </div>
+
+        <.form for={@form} phx-change="validate" phx-submit="save" class="space-y-4">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">Mensaje de agradecimiento *</span>
+            </label>
+            <textarea
+              name="closure[closing_message]"
+              placeholder="Gracias a todos los que colaboraron con este proyecto..."
+              rows="3"
+              class={["textarea textarea-bordered", @form[:closing_message].errors != [] && "textarea-error"]}
+              required
+            >{@form[:closing_message].value}</textarea>
+            <label class="label">
+              <span class="label-text-alt text-base-content/60">Un mensaje para agradecer a quienes donaron</span>
+              <%= if @form[:closing_message].errors != [] do %>
+                <span class="label-text-alt text-error">
+                  {elem(hd(@form[:closing_message].errors), 0)}
+                </span>
+              <% end %>
+            </label>
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">Que hiciste con los fondos *</span>
+            </label>
+            <textarea
+              name="closure[outcome_description]"
+              placeholder="Con el dinero recaudado pudimos comprar..."
+              rows="5"
+              class={["textarea textarea-bordered", @form[:outcome_description].errors != [] && "textarea-error"]}
+              required
+            >{@form[:outcome_description].value}</textarea>
+            <label class="label">
+              <span class="label-text-alt text-base-content/60">Describe en detalle como usaste los fondos</span>
+              <%= if @form[:outcome_description].errors != [] do %>
+                <span class="label-text-alt text-error">
+                  {elem(hd(@form[:outcome_description].errors), 0)}
+                </span>
+              <% end %>
+            </label>
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium">Fotos (opcional)</span>
+            </label>
+
+            <div class="flex flex-wrap gap-4 items-start">
+              <!-- Upload area with drag and drop -->
+              <div class="flex-1 min-w-[200px]">
+                <div
+                  class="border-2 border-dashed border-base-content/20 rounded-lg p-6 text-center hover:border-primary transition-colors"
+                  phx-drop-target={@uploads.images.ref}
+                >
+                  <.live_file_input upload={@uploads.images} class="hidden" />
+                  <label for={@uploads.images.ref} class="cursor-pointer">
+                    <.icon name="hero-photo" class="h-10 w-10 mx-auto text-base-content/40 mb-2" />
+                    <p class="text-sm text-base-content/60">
+                      Arrastra o <span class="text-primary">selecciona</span>
+                    </p>
+                    <p class="text-xs text-base-content/40 mt-1">JPG, PNG, WebP (max 5MB c/u, hasta 4 fotos)</p>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Preview uploaded files -->
+              <%= for entry <- @uploads.images.entries do %>
+                <div class="flex items-center gap-3 p-2 bg-base-300 rounded-lg">
+                  <.live_img_preview entry={entry} class="w-16 h-16 object-cover rounded" />
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium truncate">{entry.client_name}</p>
+                    <p class="text-xs text-base-content/60">{trunc(entry.client_size / 1024)} KB</p>
+                  </div>
+                  <button
+                    type="button"
+                    phx-click="cancel_upload"
+                    phx-value-ref={entry.ref}
+                    class="btn btn-ghost btn-sm btn-circle"
+                  >
+                    <.icon name="hero-x-mark" class="h-4 w-4" />
+                  </button>
+                </div>
+
+                <%= for err <- upload_errors(@uploads.images, entry) do %>
+                  <p class="text-error text-sm">{error_to_string(err)}</p>
+                <% end %>
+              <% end %>
+
+              <%= for err <- upload_errors(@uploads.images) do %>
+                <p class="text-error text-sm">{error_to_string(err)}</p>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="flex justify-end gap-2">
+            <.link navigate={~p"/organization/requests/#{@request}"} class="btn btn-ghost">
+              Cancelar
+            </.link>
+            <button type="submit" class="btn btn-primary">
+              <.icon name="hero-check" class="h-5 w-5 mr-1" />
+              Publicar rendicion
+            </button>
+          </div>
+        </.form>
+      </div>
+    </div>
+  </div>
+</main>

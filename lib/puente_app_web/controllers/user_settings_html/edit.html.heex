@@ -62,30 +62,30 @@
       </div>
     <% end %>
 
-    <!-- Contrasena -->
+    <!-- Contraseña -->
     <div class="card bg-base-200">
       <div class="card-body">
-        <h2 class="card-title text-lg">Cambiar Contrasena</h2>
+        <h2 class="card-title text-lg">Cambiar Contraseña</h2>
         <.form :let={f} for={@password_changeset} action={~p"/users/settings"} id="update_password">
           <input type="hidden" name="action" value="update_password" />
 
           <.input
             field={f[:password]}
             type="password"
-            label="Nueva contrasena"
+            label="Nueva contraseña"
             autocomplete="new-password"
             required
           />
           <.input
             field={f[:password_confirmation]}
             type="password"
-            label="Confirmar nueva contrasena"
+            label="Confirmar nueva contraseña"
             autocomplete="new-password"
             required
           />
           <div class="mt-4">
             <.button variant="primary" phx-disable-with="Guardando...">
-              Guardar Contrasena
+              Guardar Contraseña
             </.button>
           </div>
         </.form>

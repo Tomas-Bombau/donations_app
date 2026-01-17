@@ -4,26 +4,13 @@
   <div class="mx-auto max-w-4xl">
     <div class="flex items-center justify-between mb-8">
       <div class="flex items-center gap-4">
-        <.link navigate={~p"/admin"} class="btn btn-ghost btn-sm btn-circle">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
+        <.link navigate={if @live_action == :index, do: ~p"/admin", else: ~p"/admin/categories"} class="btn btn-ghost btn-sm btn-circle">
+          <.icon name="hero-chevron-left" class="h-5 w-5" />
         </.link>
-        <h1 class="text-2xl font-bold">Categorias</h1>
+        <h1 class="text-2xl font-bold">{@page_title}</h1>
       </div>
       <.link patch={~p"/admin/categories/new"} class="btn btn-primary btn-sm">
-        Nueva categoria
+        <.icon name="hero-plus" class="size-4" /> Nueva categoria
       </.link>
     </div>
 
@@ -31,7 +18,7 @@
       <div class="card bg-base-200 mb-6">
         <div class="card-body">
           <h2 class="card-title mb-4">{@page_title}</h2>
-          <.form for={@changeset} phx-submit="save" class="space-y-4">
+          <.form for={@form} phx-submit="save" class="space-y-4">
             <div class="form-control">
               <label class="label">
                 <span class="label-text">Nombre</span>
@@ -39,16 +26,16 @@
               <input
                 type="text"
                 name="category[name]"
-                value={Phoenix.HTML.Form.input_value(@changeset, :name)}
+                value={@form[:name].value}
                 class={[
                   "input input-bordered w-full",
-                  @changeset.errors[:name] && "input-error"
+                  @form[:name].errors != [] && "input-error"
                 ]}
                 required
               />
-              <%= if error = @changeset.errors[:name] do %>
+              <%= if @form[:name].errors != [] do %>
                 <label class="label">
-                  <span class="label-text-alt text-error">{translate_error(error)}</span>
+                  <span class="label-text-alt text-error">{translate_error(hd(@form[:name].errors))}</span>
                 </label>
               <% end %>
             </div>
@@ -61,15 +48,37 @@
                 name="category[description]"
                 class="textarea textarea-bordered w-full"
                 rows="3"
-              >{Phoenix.HTML.Form.input_value(@changeset, :description)}</textarea>
+              >{@form[:description].value}</textarea>
             </div>
 
             <div class="flex gap-2 justify-end">
               <.link patch={~p"/admin/categories"} class="btn btn-ghost">
-                Cancelar
+                <.icon name="hero-x-mark" class="size-4" /> Cancelar
               </.link>
+              <%= if @live_action == :edit do %>
+                <%= if @category.active do %>
+                  <button
+                    type="button"
+                    phx-click="deactivate"
+                    phx-value-id={@category.id}
+                    data-confirm="Desactivar esta categoria? Los pedidos existentes conservaran su categoria."
+                    class="btn btn-warning"
+                  >
+                    <.icon name="hero-eye-slash" class="size-4" /> Desactivar
+                  </button>
+                <% else %>
+                  <button
+                    type="button"
+                    phx-click="activate"
+                    phx-value-id={@category.id}
+                    class="btn btn-success"
+                  >
+                    <.icon name="hero-eye" class="size-4" /> Activar
+                  </button>
+                <% end %>
+              <% end %>
               <button type="submit" class="btn btn-primary">
-                Guardar
+                <.icon name="hero-check" class="size-4" /> Guardar
               </button>
             </div>
           </.form>
@@ -77,79 +86,133 @@
       </div>
     <% end %>
 
-    <%= if @categories == [] do %>
-      <div class="text-center py-12 text-base-content/60">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-16 w-16 mx-auto mb-4 opacity-50"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-          />
-        </svg>
-        <p class="text-lg">No hay categorias creadas</p>
-        <p class="text-sm mt-2">Crea una categoria para comenzar</p>
+    <%= if @live_action == :index do %>
+      <div class="card bg-base-200 mb-6">
+        <div class="card-body py-4">
+          <form phx-change="filter" class="flex gap-4 items-end">
+            <div class="form-control flex-1">
+              <label class="label">
+                <span class="label-text">Buscar por nombre</span>
+              </label>
+              <input
+                type="text"
+                name="search"
+                value={@filters["search"]}
+                placeholder="Buscar categoria..."
+                class="input input-bordered w-full"
+                phx-debounce="300"
+              />
+            </div>
+          </form>
+        </div>
       </div>
-    <% else %>
-      <div class="space-y-3">
-        <%= for category <- @categories do %>
-          <div class="card bg-base-200 shadow-sm hover:bg-base-300 transition-colors">
-            <div class="card-body py-3 px-4">
-              <div class="flex justify-between items-center gap-4">
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-2">
-                    <h3 class="font-semibold truncate">{category.name}</h3>
-                    <%= if category.active do %>
-                      <span class="badge badge-success badge-sm">Activa</span>
-                    <% else %>
-                      <span class="badge badge-ghost badge-sm">Inactiva</span>
+
+      <%= if @categories == [] do %>
+        <div class="text-center py-12 text-base-content/60">
+          <.icon name="hero-tag" class="h-16 w-16 mx-auto mb-4 opacity-50" />
+          <%= if @filters["search"] != "" do %>
+            <p class="text-lg">No se encontraron categorias</p>
+            <p class="text-sm mt-2">Intenta con otro termino de busqueda</p>
+          <% else %>
+            <p class="text-lg">No hay categorias creadas</p>
+            <p class="text-sm mt-2">Crea una categoria para comenzar</p>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="space-y-3">
+          <%= for category <- @categories do %>
+            <div class="card bg-base-200 shadow-sm hover:bg-base-300 transition-colors">
+              <div class="card-body py-3 px-4">
+                <div class="flex justify-between items-center gap-4">
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                      <h3 class="font-semibold truncate">{category.name}</h3>
+                      <%= if category.active do %>
+                        <span class="badge badge-success badge-sm">Activa</span>
+                      <% else %>
+                        <span class="badge badge-ghost badge-sm">Inactiva</span>
+                      <% end %>
+                    </div>
+                    <%= if category.description do %>
+                      <p class="text-sm text-base-content/60 mt-1 line-clamp-2">
+                        {category.description}
+                      </p>
                     <% end %>
                   </div>
-                  <%= if category.description do %>
-                    <p class="text-sm text-base-content/60 mt-1 line-clamp-2">
-                      {category.description}
-                    </p>
-                  <% end %>
-                </div>
-                <div class="flex gap-2 shrink-0">
-                  <.link
-                    patch={~p"/admin/categories/#{category}/edit"}
-                    class="btn btn-ghost btn-sm"
-                  >
-                    Editar
-                  </.link>
-                  <%= if category.active do %>
-                    <button
-                      type="button"
-                      phx-click="deactivate"
-                      phx-value-id={category.id}
-                      data-confirm="Desactivar esta categoria? Los pedidos existentes conservaran su categoria."
-                      class="btn btn-warning btn-sm"
+                  <div class="flex gap-2 shrink-0">
+                    <%= if category.active do %>
+                      <button
+                        type="button"
+                        phx-click="deactivate"
+                        phx-value-id={category.id}
+                        data-confirm="Desactivar esta categoria?"
+                        class="btn btn-ghost btn-sm"
+                      >
+                        <.icon name="hero-eye-slash" class="size-4" />
+                      </button>
+                    <% else %>
+                      <button
+                        type="button"
+                        phx-click="activate"
+                        phx-value-id={category.id}
+                        class="btn btn-ghost btn-sm"
+                      >
+                        <.icon name="hero-eye" class="size-4" />
+                      </button>
+                    <% end %>
+                    <.link
+                      patch={~p"/admin/categories/#{category}/edit"}
+                      class="btn btn-ghost btn-sm"
                     >
-                      Desactivar
-                    </button>
-                  <% else %>
-                    <button
-                      type="button"
-                      phx-click="activate"
-                      phx-value-id={category.id}
-                      class="btn btn-success btn-sm"
-                    >
-                      Activar
-                    </button>
-                  <% end %>
+                      <.icon name="hero-pencil-square" class="size-4" /> Editar
+                    </.link>
+                  </div>
                 </div>
               </div>
             </div>
+          <% end %>
+        </div>
+
+        <%= if @total_pages > 1 do %>
+          <div class="flex justify-center items-center gap-2 mt-8">
+            <%= if @page > 1 do %>
+              <button
+                type="button"
+                phx-click="change_page"
+                phx-value-page={@page - 1}
+                class="btn btn-sm btn-ghost"
+              >
+                <.icon name="hero-chevron-left" class="h-5 w-5" />
+              </button>
+            <% end %>
+
+            <%= for page_num <- max(1, @page - 2)..min(@total_pages, @page + 2) do %>
+              <button
+                type="button"
+                phx-click="change_page"
+                phx-value-page={page_num}
+                class={["btn btn-sm", if(page_num == @page, do: "btn-primary", else: "btn-ghost")]}
+              >
+                {page_num}
+              </button>
+            <% end %>
+
+            <%= if @page < @total_pages do %>
+              <button
+                type="button"
+                phx-click="change_page"
+                phx-value-page={@page + 1}
+                class="btn btn-sm btn-ghost"
+              >
+                <.icon name="hero-chevron-right" class="h-5 w-5" />
+              </button>
+            <% end %>
           </div>
+          <p class="text-center text-sm text-base-content/60 mt-2">
+            Mostrando {length(@categories)} de {@total_count} categorias
+          </p>
         <% end %>
-      </div>
+      <% end %>
     <% end %>
   </div>
 </main>

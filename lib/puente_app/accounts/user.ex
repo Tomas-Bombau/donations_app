@@ -15,6 +15,7 @@ defmodule PuenteApp.Accounts.User do
     field :authenticated_at, :utc_datetime, virtual: true
     field :archived, :boolean, default: false
     field :archived_at, :utc_datetime
+    field :image_path, :string
 
     has_one :organization, PuenteApp.Organizations.Organization
     belongs_to :archived_by_user, PuenteApp.Accounts.User, foreign_key: :archived_by
@@ -41,7 +42,7 @@ defmodule PuenteApp.Accounts.User do
     |> validate_format(:phone, ~r/^[\d\s\-\+\(\)]*$/, message: "formato de telefono invalido")
     |> validate_inclusion(:role, [:donor, :organization, :super_admin])
     |> validate_email(opts)
-    |> validate_confirmation(:password, message: "las contrasenas no coinciden")
+    |> validate_confirmation(:password, message: "las contraseñas no coinciden")
     |> validate_password(opts)
   end
 
@@ -57,7 +58,7 @@ defmodule PuenteApp.Accounts.User do
     |> validate_format(:phone, ~r/^[\d\s\-\+\(\)]*$/, message: "formato de telefono invalido")
     |> validate_inclusion(:role, [:donor, :organization, :super_admin])
     |> validate_email(opts)
-    |> validate_confirmation(:password, message: "las contrasenas no coinciden")
+    |> validate_confirmation(:password, message: "las contraseñas no coinciden")
     |> validate_password(opts)
   end
 
@@ -196,6 +197,14 @@ defmodule PuenteApp.Accounts.User do
   """
   def unarchive_changeset(user) do
     change(user, archived: false, archived_at: nil, archived_by: nil)
+  end
+
+  @doc """
+  A user changeset for updating the profile image.
+  """
+  def image_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:image_path])
   end
 
   @doc """

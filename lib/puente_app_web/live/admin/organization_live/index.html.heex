@@ -33,6 +33,14 @@
 <!-- Filters -->
     <form phx-change="filter" class="mb-6">
       <div class="flex flex-wrap gap-3 items-center">
+        <input
+          type="text"
+          name="search"
+          value={@filters["search"]}
+          placeholder="Buscar por nombre..."
+          class="input input-bordered input-sm w-56"
+          phx-debounce="300"
+        />
         <select name="province" class="select select-bordered select-sm w-44">
           <option
             value=""
@@ -170,9 +178,9 @@
 
         <div class="flex-1"></div>
 
-        <.link patch={~p"/admin/organizations?tab=#{@tab}"} class="btn btn-sm btn-ghost">
+        <button type="button" phx-click="clear_filters" class="btn btn-sm btn-ghost">
           Limpiar filtros
-        </.link>
+        </button>
       </div>
     </form>
 
@@ -235,7 +243,7 @@
                     navigate={~p"/admin/organizations/#{org}/edit"}
                     class="btn btn-ghost btn-sm"
                   >
-                    Editar
+                    <.icon name="hero-pencil-square" class="size-4" /> Editar
                   </.link>
                   <%= if @tab == "pending" do %>
                     <button
@@ -245,28 +253,7 @@
                       data-confirm="Estas seguro de aprobar esta organizacion?"
                       class="btn btn-success btn-sm"
                     >
-                      Aprobar
-                    </button>
-                  <% end %>
-                  <%= if @tab == "archived" do %>
-                    <button
-                      type="button"
-                      phx-click="unarchive"
-                      phx-value-id={org.id}
-                      data-confirm="Estas seguro de desarchivar esta organizacion?"
-                      class="btn btn-warning btn-sm"
-                    >
-                      Desarchivar
-                    </button>
-                  <% else %>
-                    <button
-                      type="button"
-                      phx-click="archive"
-                      phx-value-id={org.id}
-                      data-confirm="Estas seguro de archivar esta organizacion?"
-                      class="btn btn-warning btn-sm"
-                    >
-                      Archivar
+                      <.icon name="hero-check" class="size-4" /> Aprobar
                     </button>
                   <% end %>
                 </div>
@@ -279,30 +266,36 @@
       <%= if @total_pages > 1 do %>
         <div class="flex justify-center items-center gap-2 mt-8">
           <%= if @page > 1 do %>
-            <.link
-              patch={build_pagination_path(@tab, @page - 1, @filters)}
+            <button
+              type="button"
+              phx-click="change_page"
+              phx-value-page={@page - 1}
               class="btn btn-sm btn-ghost"
             >
               <.icon name="hero-chevron-left" class="h-5 w-5" />
-            </.link>
+            </button>
           <% end %>
 
           <%= for page_num <- max(1, @page - 2)..min(@total_pages, @page + 2) do %>
-            <.link
-              patch={build_pagination_path(@tab, page_num, @filters)}
+            <button
+              type="button"
+              phx-click="change_page"
+              phx-value-page={page_num}
               class={["btn btn-sm", if(page_num == @page, do: "btn-primary", else: "btn-ghost")]}
             >
               {page_num}
-            </.link>
+            </button>
           <% end %>
 
           <%= if @page < @total_pages do %>
-            <.link
-              patch={build_pagination_path(@tab, @page + 1, @filters)}
+            <button
+              type="button"
+              phx-click="change_page"
+              phx-value-page={@page + 1}
               class="btn btn-sm btn-ghost"
             >
               <.icon name="hero-chevron-right" class="h-5 w-5" />
-            </.link>
+            </button>
           <% end %>
         </div>
         <p class="text-center text-sm text-base-content/60 mt-2">

@@ -41,7 +41,7 @@ defmodule PuenteApp.Accounts do
   def get_user_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
     user = Repo.get_by(User, email: email)
-    if User.valid_password?(user, password), do: user
+    if User.valid_password?(user, password) and user.archived != true, do: user
   end
 
   @doc """
@@ -59,6 +59,26 @@ defmodule PuenteApp.Accounts do
 
   """
   def get_user!(id), do: Repo.get!(User, id)
+
+  @doc """
+  Gets a user by ID, ensuring they have the :organization role.
+  Raises `Ecto.NoResultsError` if not found or wrong role.
+  """
+  def get_organization_user!(id) do
+    User
+    |> where(id: ^id, role: :organization)
+    |> Repo.one!()
+  end
+
+  @doc """
+  Gets a user by ID, ensuring they have the :donor role.
+  Raises `Ecto.NoResultsError` if not found or wrong role.
+  """
+  def get_donor_user!(id) do
+    User
+    |> where(id: ^id, role: :donor)
+    |> Repo.one!()
+  end
 
   ## User registration
 
@@ -292,32 +312,23 @@ defmodule PuenteApp.Accounts do
   ## Admin functions
 
   @doc """
-  Lists all users with a given role (excluding archived).
-  """
-  def list_users_by_role(role) do
-    User
-    |> where(role: ^role)
-    |> where([u], u.archived == false or is_nil(u.archived))
-    |> order_by(desc: :inserted_at)
-    |> Repo.all()
-  end
-
-  @doc """
   Lists users by role with pagination (excluding archived).
   Returns {list, total_count}.
   """
-  def list_users_by_role_paginated(role, page, per_page) do
+  def list_users_by_role_paginated(role, page, per_page, filters \\ %{}) do
     offset = (page - 1) * per_page
 
     query =
       User
       |> where(role: ^role)
       |> where([u], u.archived == false or is_nil(u.archived))
+      |> apply_user_search_filter(filters["search"])
 
     total_count = Repo.aggregate(query, :count, :id)
 
     users =
       query
+      |> preload(:organization)
       |> order_by(desc: :inserted_at)
       |> limit(^per_page)
       |> offset(^offset)
@@ -330,36 +341,26 @@ defmodule PuenteApp.Accounts do
   Lists archived users by role with pagination.
   Returns {list, total_count}.
   """
-  def list_archived_users_by_role_paginated(role, page, per_page) do
+  def list_archived_users_by_role_paginated(role, page, per_page, filters \\ %{}) do
     offset = (page - 1) * per_page
 
     query =
       User
       |> where(role: ^role)
       |> where([u], u.archived == true)
+      |> apply_user_search_filter(filters["search"])
 
     total_count = Repo.aggregate(query, :count, :id)
 
     users =
       query
+      |> preload(:organization)
       |> order_by(desc: :archived_at)
       |> limit(^per_page)
       |> offset(^offset)
       |> Repo.all()
 
     {users, total_count}
-  end
-
-  @doc """
-  Lists all organization users with their profiles (excluding archived).
-  """
-  def list_organizations do
-    User
-    |> where(role: :organization)
-    |> where([u], u.archived == false or is_nil(u.archived))
-    |> preload(:organization)
-    |> order_by(desc: :inserted_at)
-    |> Repo.all()
   end
 
   @doc """
@@ -394,8 +395,10 @@ defmodule PuenteApp.Accounts do
     province = filters["province"]
     municipality = filters["municipality"]
     has_legal_entity = filters["has_legal_entity"]
+    search = filters["search"]
 
-    needs_join = (province && province != "") || (municipality && municipality != "") || (has_legal_entity && has_legal_entity != "")
+    needs_join = (province && province != "") || (municipality && municipality != "") ||
+                 (has_legal_entity && has_legal_entity != "") || (search && search != "")
 
     if needs_join do
       query
@@ -403,9 +406,17 @@ defmodule PuenteApp.Accounts do
       |> apply_province_filter(province)
       |> apply_municipality_filter(municipality)
       |> apply_legal_entity_filter(has_legal_entity)
+      |> apply_org_name_search(search)
     else
       query
     end
+  end
+
+  defp apply_org_name_search(query, nil), do: query
+  defp apply_org_name_search(query, ""), do: query
+  defp apply_org_name_search(query, search) do
+    search_term = "%#{search |> String.trim() |> String.downcase()}%"
+    where(query, [u, org: o], ilike(o.organization_name, ^search_term))
   end
 
   defp apply_province_filter(query, nil), do: query
@@ -427,6 +438,15 @@ defmodule PuenteApp.Accounts do
   end
   defp apply_legal_entity_filter(query, "false") do
     where(query, [u, org: o], o.has_legal_entity == false or is_nil(o.has_legal_entity))
+  end
+
+  defp apply_user_search_filter(query, nil), do: query
+  defp apply_user_search_filter(query, ""), do: query
+  defp apply_user_search_filter(query, search) do
+    search_term = "%#{search |> String.trim() |> String.downcase()}%"
+    where(query, [u],
+      ilike(u.first_name, ^search_term) or ilike(u.last_name, ^search_term)
+    )
   end
 
   @doc """
@@ -486,18 +506,18 @@ defmodule PuenteApp.Accounts do
   end
 
   @doc """
-  Returns a changeset for changing donor profile fields (first_name, last_name, phone, email).
+  Returns a changeset for changing donor profile fields (first_name, last_name, phone, email, image_path).
   """
   def change_donor_profile(%User{} = user, attrs \\ %{}) do
     user
-    |> Ecto.Changeset.cast(attrs, [:first_name, :last_name, :phone, :email])
+    |> Ecto.Changeset.cast(attrs, [:first_name, :last_name, :phone, :email, :image_path])
     |> Ecto.Changeset.validate_required([:first_name, :last_name, :email])
     |> Ecto.Changeset.validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "formato de email invalido")
     |> Ecto.Changeset.unique_constraint(:email)
   end
 
   @doc """
-  Updates a donor's profile (first_name, last_name, phone, email).
+  Updates a donor's profile (first_name, last_name, phone, email, image_path).
   """
   def update_donor_profile(%User{} = user, attrs) do
     user
@@ -506,10 +526,19 @@ defmodule PuenteApp.Accounts do
   end
 
   @doc """
-  Deletes a user and all associated data.
+  Returns a changeset for updating user profile image.
   """
-  def delete_user(%User{} = user) do
-    Repo.delete(user)
+  def change_user_image(%User{} = user, attrs \\ %{}) do
+    User.image_changeset(user, attrs)
+  end
+
+  @doc """
+  Updates the user's profile image path.
+  """
+  def update_user_image(%User{} = user, attrs) do
+    user
+    |> User.image_changeset(attrs)
+    |> Repo.update()
   end
 
   @doc """
@@ -531,13 +560,56 @@ defmodule PuenteApp.Accounts do
   end
 
   @doc """
-  Approves a user by admin.
+  Approves an organization user by admin.
+  Returns {:error, :invalid_role} if user is not an organization.
   """
-  def approve_user(%User{} = user) do
+  def approve_user(%User{role: :organization} = user) do
     user
     |> User.admin_approve_changeset()
     |> Repo.update()
   end
+
+  def approve_user(%User{}), do: {:error, :invalid_role}
+
+  @doc """
+  Archives an organization user with role validation.
+  Returns {:error, :invalid_role} if user is not an organization.
+  """
+  def archive_organization(%User{role: :organization} = user, archived_by_id) do
+    archive_user(user, archived_by_id)
+  end
+
+  def archive_organization(%User{}, _archived_by_id), do: {:error, :invalid_role}
+
+  @doc """
+  Archives a donor user with role validation.
+  Returns {:error, :invalid_role} if user is not a donor.
+  """
+  def archive_donor(%User{role: :donor} = user, archived_by_id) do
+    archive_user(user, archived_by_id)
+  end
+
+  def archive_donor(%User{}, _archived_by_id), do: {:error, :invalid_role}
+
+  @doc """
+  Unarchives an organization user with role validation.
+  Returns {:error, :invalid_role} if user is not an organization.
+  """
+  def unarchive_organization(%User{role: :organization} = user) do
+    unarchive_user(user)
+  end
+
+  def unarchive_organization(%User{}), do: {:error, :invalid_role}
+
+  @doc """
+  Unarchives a donor user with role validation.
+  Returns {:error, :invalid_role} if user is not a donor.
+  """
+  def unarchive_donor(%User{role: :donor} = user) do
+    unarchive_user(user)
+  end
+
+  def unarchive_donor(%User{}), do: {:error, :invalid_role}
 
   @doc """
   Lists archived organizations with pagination and filters.
@@ -564,19 +636,6 @@ defmodule PuenteApp.Accounts do
       |> Repo.all()
 
     {organizations, total_count}
-  end
-
-  @doc """
-  Lists pending organization approvals (excluding archived).
-  """
-  def list_pending_organizations do
-    User
-    |> where(role: :organization)
-    |> where([u], is_nil(u.admin_approved_at))
-    |> where([u], u.archived == false or is_nil(u.archived))
-    |> preload(:organization)
-    |> order_by(desc: :inserted_at)
-    |> Repo.all()
   end
 
   @doc """
@@ -618,11 +677,11 @@ defmodule PuenteApp.Accounts do
   defp update_user_and_delete_all_tokens(changeset) do
     Repo.transact(fn ->
       with {:ok, user} <- Repo.update(changeset) do
-        tokens_to_expire = Repo.all_by(UserToken, user_id: user.id)
+        {_count, tokens} =
+          from(t in UserToken, where: t.user_id == ^user.id, select: t)
+          |> Repo.delete_all()
 
-        Repo.delete_all(from(t in UserToken, where: t.id in ^Enum.map(tokens_to_expire, & &1.id)))
-
-        {:ok, {user, tokens_to_expire}}
+        {:ok, {user, tokens || []}}
       end
     end)
   end

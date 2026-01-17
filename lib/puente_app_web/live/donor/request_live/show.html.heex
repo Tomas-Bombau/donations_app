@@ -2,10 +2,11 @@
 
 <main class="px-4 py-12 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-2xl">
-    <div class="mb-4">
-      <.link navigate={~p"/donor/requests"} class="text-sm text-base-content/60 hover:text-base-content">
-        &larr; Pedidos activos
+    <div class="flex items-center gap-4 mb-4">
+      <.link navigate={~p"/donor/requests"} class="btn btn-ghost btn-sm btn-circle">
+        <.icon name="hero-chevron-left" class="h-5 w-5" />
       </.link>
+      <h1 class="text-2xl font-bold">Pedido</h1>
     </div>
 
     <div class="card bg-base-200">
@@ -28,23 +29,23 @@
               </p>
               <div class="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-sm">
                 <div>
-                  <span class="text-base-content/60">Facebook:</span>
+                  <span class="font-semibold">Facebook:</span>
                   <%= if @request.organization.facebook do %>
-                    <a href={"https://#{@request.organization.facebook}"} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline ml-1">
+                    <a href={"https://#{@request.organization.facebook}"} target="_blank" rel="noopener noreferrer" class="text-base-content/70 hover:underline ml-1">
                       {@request.organization.facebook}
                     </a>
                   <% else %>
-                    <span class="ml-1">-</span>
+                    <span class="ml-1 text-base-content/60">-</span>
                   <% end %>
                 </div>
                 <div>
-                  <span class="text-base-content/60">Instagram:</span>
+                  <span class="font-semibold">Instagram:</span>
                   <%= if @request.organization.instagram do %>
-                    <a href={"https://instagram.com/#{String.replace(@request.organization.instagram, "@", "")}"} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline ml-1">
+                    <a href={"https://instagram.com/#{String.replace(@request.organization.instagram, "@", "")}"} target="_blank" rel="noopener noreferrer" class="text-base-content/70 hover:underline ml-1">
                       {@request.organization.instagram}
                     </a>
                   <% else %>
-                    <span class="ml-1">-</span>
+                    <span class="ml-1 text-base-content/60">-</span>
                   <% end %>
                 </div>
               </div>
@@ -54,21 +55,21 @@
             <div class="divider my-2"></div>
             <%= if @request.organization.activities do %>
               <div class="mb-2">
-                <span class="text-xs text-base-content/60">Actividades:</span>
-                <p class="text-sm whitespace-pre-wrap">{@request.organization.activities}</p>
+                <span class="text-sm font-semibold">Actividades:</span>
+                <p class="text-sm text-base-content/70 whitespace-pre-wrap">{@request.organization.activities}</p>
               </div>
             <% end %>
             <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
               <%= if @request.organization.audience do %>
                 <div>
-                  <span class="text-base-content/60">Publico:</span>
-                  <span class="ml-1">{@request.organization.audience}</span>
+                  <span class="font-semibold">Publico:</span>
+                  <span class="ml-1 text-base-content/70">{@request.organization.audience}</span>
                 </div>
               <% end %>
               <%= if @request.organization.reach do %>
                 <div>
-                  <span class="text-base-content/60">Alcance:</span>
-                  <span class="ml-1">{@request.organization.reach}</span>
+                  <span class="font-semibold">Alcance:</span>
+                  <span class="ml-1 text-base-content/70">{@request.organization.reach}</span>
                 </div>
               <% end %>
             </div>
@@ -83,25 +84,25 @@
           <div class="flex items-start justify-between">
             <div>
               <h1 class="text-xl font-semibold">{@request.title}</h1>
-              <span class="text-sm text-base-content/60">{@request.category.name}</span>
+              <span class="text-sm text-base-content/70">{@request.category.name}</span>
             </div>
             <div class="text-right shrink-0">
-              <span class="text-sm text-base-content/60">Fecha limite</span>
-              <p class="font-medium">{format_date(@request.deadline)}</p>
+              <span class="text-sm font-semibold">Fecha limite</span>
+              <p class="text-base-content/70">{format_date(@request.deadline)}</p>
             </div>
           </div>
         </div>
 
         <div class="mb-4">
-          <span class="text-sm text-base-content/60">Monto solicitado</span>
-          <p class="font-medium">{format_currency(@request.amount)}</p>
+          <span class="text-sm font-semibold">Monto solicitado</span>
+          <p class="text-base-content/70">{format_currency(@request.amount)}</p>
         </div>
 
         <!-- Progress -->
         <div class="mb-4">
           <div class="flex justify-between text-sm mb-1">
-            <span class="text-base-content/60">Recaudado</span>
-            <span class="font-medium">{format_currency(@request.amount_raised)} de {format_currency(@request.amount)}</span>
+            <span class="font-semibold">Recaudado</span>
+            <span class="text-base-content/70">{format_currency(@request.amount_raised)} de {format_currency(@request.amount)}</span>
           </div>
           <progress
             class="progress progress-success w-full"
@@ -111,18 +112,18 @@
         </div>
 
         <div>
-          <span class="text-sm text-base-content/60">Descripcion</span>
-          <p class="mt-1 whitespace-pre-wrap">{@request.description}</p>
+          <span class="text-sm font-semibold">Descripcion</span>
+          <p class="mt-1 text-base-content/70 whitespace-pre-wrap">{@request.description}</p>
         </div>
 
         <%= if @request.reference_links != [] do %>
           <div class="divider"></div>
           <div>
-            <span class="text-sm text-base-content/60">Links de referencia</span>
+            <span class="text-sm font-semibold">Links de referencia</span>
             <ul class="mt-2 space-y-1">
               <%= for link <- @request.reference_links do %>
                 <li>
-                  <a href={link} target="_blank" rel="noopener noreferrer" class="link link-primary text-sm flex items-center gap-1">
+                  <a href={link} target="_blank" rel="noopener noreferrer" class="text-sm text-base-content/70 hover:underline flex items-center gap-1">
                     <.icon name="hero-arrow-top-right-on-square" class="h-4 w-4" />
                     {link}
                   </a>
@@ -135,7 +136,7 @@
         <div class="divider"></div>
         <div class="flex justify-end">
           <button type="button" phx-click="open_modal" class="btn btn-primary">
-            Donar
+            Quiero ayudar
           </button>
         </div>
       </div>
@@ -147,7 +148,7 @@
 <%= if @show_modal do %>
   <div class="modal modal-open">
     <div class="modal-box">
-      <h3 class="font-bold text-lg mb-4">Realizar donacion</h3>
+      <h3 class="font-bold text-lg mb-4">Quiero ayudar</h3>
 
       <!-- Payment info -->
       <div class="bg-base-300 rounded-lg p-4 mb-4">
@@ -169,7 +170,7 @@
       <.form for={@form} phx-change="validate_donation" phx-submit="save_donation">
         <div class="form-control">
           <label class="label">
-            <span class="label-text">Monto a donar</span>
+            <span class="label-text">Monto de mi aporte</span>
           </label>
           <input
             type="number"
@@ -191,8 +192,12 @@
         </div>
 
         <div class="modal-action">
-          <button type="button" phx-click="close_modal" class="btn btn-ghost">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Aceptar</button>
+          <button type="button" phx-click="close_modal" class="btn btn-ghost">
+            <.icon name="hero-x-mark" class="size-4" /> Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <.icon name="hero-check" class="size-4" /> Aceptar
+          </button>
         </div>
       </.form>
     </div>

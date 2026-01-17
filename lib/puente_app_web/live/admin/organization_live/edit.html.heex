@@ -2,13 +2,12 @@
 
 <main class="px-4 py-12 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-4xl">
-    <div class="mb-4">
-      <.link navigate={~p"/admin/organizations"} class="text-sm text-base-content/60 hover:text-base-content">
-        &larr; Organizaciones
+    <div class="flex items-center gap-4 mb-8">
+      <.link navigate={~p"/admin/organizations"} class="btn btn-ghost btn-sm btn-circle">
+        <.icon name="hero-chevron-left" class="h-5 w-5" />
       </.link>
+      <h1 class="text-2xl font-bold">Editar organizacion</h1>
     </div>
-
-    <h1 class="text-2xl font-bold mb-8">Editar organizacion</h1>
 
     <form phx-submit="save" phx-change="validate">
       <div class="card bg-base-200">
@@ -340,10 +339,29 @@
 
           <div class="flex justify-end gap-2">
             <.link navigate={~p"/admin/organizations"} class="btn btn-ghost">
-              Cancelar
+              <.icon name="hero-x-mark" class="size-4" /> Cancelar
             </.link>
+            <%= if @user.archived do %>
+              <button
+                type="button"
+                phx-click="unarchive"
+                data-confirm="¿Estas seguro de desarchivar esta organizacion? Recuperara acceso a la aplicacion."
+                class="btn btn-success"
+              >
+                <.icon name="hero-archive-box-arrow-down" class="size-4" /> Desarchivar
+              </button>
+            <% else %>
+              <button
+                type="button"
+                phx-click="archive"
+                data-confirm="¿Estas seguro de archivar esta organizacion? Perdera acceso a la aplicacion."
+                class="btn btn-warning"
+              >
+                <.icon name="hero-archive-box" class="size-4" /> Archivar
+              </button>
+            <% end %>
             <button type="submit" class="btn btn-primary">
-              Guardar cambios
+              <.icon name="hero-check" class="size-4" /> Guardar cambios
             </button>
           </div>
         </div>
