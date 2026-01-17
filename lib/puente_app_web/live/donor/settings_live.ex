@@ -4,6 +4,8 @@ defmodule PuenteAppWeb.Donor.SettingsLive do
   alias PuenteApp.Accounts
   alias PuenteAppWeb.Helpers.UploadHelpers
 
+  import PuenteAppWeb.Helpers.FormatHelpers, only: [error_to_string: 1]
+
   @impl true
   def mount(_params, _session, socket) do
     user = socket.assigns.current_scope.user
@@ -120,8 +122,4 @@ defmodule PuenteAppWeb.Donor.SettingsLive do
     end
   end
 
-  defp error_to_string(:too_large), do: "El archivo es muy grande (max 5MB)"
-  defp error_to_string(:not_accepted), do: "Tipo de archivo no permitido. Solo JPG, PNG o WebP"
-  defp error_to_string(:too_many_files), do: "Solo se permite un archivo"
-  defp error_to_string(_), do: "Error al subir el archivo"
 end

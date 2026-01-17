@@ -6,6 +6,8 @@ defmodule PuenteAppWeb.Donor.RequestLive.Index do
   alias PuenteApp.Donations
   alias PuenteApp.Donations.Donation
 
+  import PuenteAppWeb.Helpers.FormatHelpers, only: [format_currency: 1]
+
   @per_page 5
 
   @impl true
@@ -144,15 +146,8 @@ defmodule PuenteAppWeb.Donor.RequestLive.Index do
     end
   end
 
-  def build_pagination_path(page, filters) do
+  defp build_pagination_path(page, filters) do
     build_path(page, filters)
-  end
-
-  defp format_currency(amount) do
-    amount
-    |> Decimal.round(2)
-    |> Decimal.to_string()
-    |> then(&"$#{&1}")
   end
 
   defp days_until_deadline(deadline) do

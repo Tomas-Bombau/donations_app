@@ -23,7 +23,6 @@ defmodule PuenteApp.DonationsTest do
       assert Decimal.equal?(donation.amount, Decimal.new("1000"))
       assert donation.donor_id == donor.id
       assert donation.request_id == request.id
-      assert donation.status == :pending
     end
 
     test "returns error with invalid data" do

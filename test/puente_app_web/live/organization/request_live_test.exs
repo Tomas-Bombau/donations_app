@@ -71,7 +71,7 @@ defmodule PuenteAppWeb.Organization.RequestLiveTest do
       assert html =~ "Nuevo" or html =~ "pedido" or html =~ "Crear"
     end
 
-    test "redirects when no payment configured", %{conn: conn} do
+    test "redirects when no payment configured", %{conn: _conn} do
       {user, _org} = organization_fixture()
       conn2 = log_in_user(build_conn(), user)
 

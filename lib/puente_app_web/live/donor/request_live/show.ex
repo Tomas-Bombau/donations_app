@@ -5,6 +5,8 @@ defmodule PuenteAppWeb.Donor.RequestLive.Show do
   alias PuenteApp.Donations
   alias PuenteApp.Donations.Donation
 
+  import PuenteAppWeb.Helpers.FormatHelpers, only: [format_currency: 1, format_date: 1]
+
   @impl true
   def mount(%{"id" => id}, _session, socket) do
     request = Requests.get_request!(id)
@@ -72,14 +74,4 @@ defmodule PuenteAppWeb.Donor.RequestLive.Show do
     end
   end
 
-  defp format_currency(amount) do
-    amount
-    |> Decimal.round(2)
-    |> Decimal.to_string()
-    |> then(&"$#{&1}")
-  end
-
-  defp format_date(date) do
-    Calendar.strftime(date, "%d/%m/%Y")
-  end
 end

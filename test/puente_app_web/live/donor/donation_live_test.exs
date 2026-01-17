@@ -23,7 +23,7 @@ defmodule PuenteAppWeb.Donor.DonationLiveTest do
       assert html
     end
 
-    test "lists donor's donations", %{conn: conn} do
+    test "lists donor's donations", %{conn: _conn} do
       %{donor: donor, donation: _donation, request: request} = donation_fixture()
       conn = log_in_user(build_conn(), donor)
 
@@ -31,15 +31,16 @@ defmodule PuenteAppWeb.Donor.DonationLiveTest do
       assert html =~ request.title
     end
 
-    test "shows donation status", %{conn: conn} do
+    test "shows donation status", %{conn: _conn} do
       %{donor: donor} = donation_fixture()
       conn = log_in_user(build_conn(), donor)
 
       {:ok, _view, html} = live(conn, ~p"/donor/donations")
-      assert html =~ "Pendiente" or html =~ "pendiente"
+      # Status label for active requests is "En curso"
+      assert html =~ "En curso" or html =~ "curso"
     end
 
-    test "paginates donations", %{conn: conn} do
+    test "paginates donations", %{conn: _conn} do
       %{donor: donor} = donation_fixture()
       conn = log_in_user(build_conn(), donor)
 

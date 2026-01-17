@@ -38,7 +38,7 @@ defmodule PuenteAppWeb.Donor.RequestLiveTest do
         |> element("button[phx-click='open_modal'][phx-value-id='#{request.id}']")
         |> render_click()
 
-      assert html =~ "Donar" or html =~ "monto"
+      assert html =~ "Quiero ayudar" or html =~ "Monto de mi aporte"
     end
 
     test "closes donation modal", %{conn: conn} do

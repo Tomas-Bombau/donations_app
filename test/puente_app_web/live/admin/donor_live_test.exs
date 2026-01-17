@@ -15,7 +15,7 @@ defmodule PuenteAppWeb.Admin.DonorLiveTest do
 
     test "renders donor list page", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/admin/donors")
-      assert html =~ "Donantes" or html =~ "donantes"
+      assert html =~ "Colaboradores"
     end
 
     test "lists active donors", %{conn: conn} do

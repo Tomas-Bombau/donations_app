@@ -4,6 +4,8 @@ defmodule PuenteAppWeb.Organization.RequestLive.Index do
   alias PuenteApp.Requests
   alias PuenteApp.Organizations.Organization
 
+  import PuenteAppWeb.Helpers.FormatHelpers
+
   @per_page 5
 
   @impl true
@@ -59,35 +61,6 @@ defmodule PuenteAppWeb.Organization.RequestLive.Index do
       Requests.has_active_request?(organization_id) -> "active"
       true -> "draft"
     end
-  end
-
-  defp status_badge(status) do
-    case status do
-      :draft -> "badge-warning"
-      :active -> "badge-success"
-      :completed -> "badge-error"
-      :closed -> "badge-info"
-    end
-  end
-
-  defp status_label(status) do
-    case status do
-      :draft -> "Borrador"
-      :active -> "Activo"
-      :completed -> "Finalizado"
-      :closed -> "Cerrado"
-    end
-  end
-
-  defp format_currency(amount) do
-    amount
-    |> Decimal.round(2)
-    |> Decimal.to_string()
-    |> then(&"$#{&1}")
-  end
-
-  defp format_date(date) do
-    Calendar.strftime(date, "%d/%m/%Y")
   end
 
   defp build_path(status, page) do

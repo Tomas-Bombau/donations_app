@@ -22,8 +22,8 @@
     
 <!-- Filters -->
     <form phx-change="filter" class="mb-6">
-      <div class="flex flex-wrap gap-3 items-center">
-        <select name="province" class="select select-bordered select-sm w-44">
+      <div class="flex flex-wrap gap-2 sm:gap-3 items-center">
+        <select name="province" class="select select-bordered select-sm w-full sm:w-44">
           <option value="" selected={@filters["province"] == ""}>Provincia</option>
           <option value="CABA" selected={@filters["province"] == "CABA"}>CABA</option>
           <option value="Buenos Aires" selected={@filters["province"] == "Buenos Aires"}>
@@ -32,7 +32,7 @@
         </select>
 
         <%= if @filters["province"] == "Buenos Aires" do %>
-          <select name="municipality" class="select select-bordered select-sm w-52">
+          <select name="municipality" class="select select-bordered select-sm w-full sm:w-52">
             <option value="" selected={@filters["municipality"] == ""}>Municipio</option>
             <%= for {label, value} <- PuenteApp.Organizations.Organization.municipality_options() do %>
               <option value={value} selected={@filters["municipality"] == value}>{label}</option>
@@ -40,7 +40,7 @@
           </select>
         <% end %>
 
-        <select name="category_id" class="select select-bordered select-sm w-44">
+        <select name="category_id" class="select select-bordered select-sm w-full sm:w-44">
           <option value="" selected={@filters["category_id"] == ""}>Categoria</option>
           <%= for category <- @categories do %>
             <option value={category.id} selected={@filters["category_id"] == category.id}>
@@ -49,8 +49,8 @@
           <% end %>
         </select>
 
-        <div class="flex-1"></div>
-        <.link patch={~p"/donor/requests"} class="btn btn-sm btn-ghost">
+        <div class="hidden sm:flex flex-1"></div>
+        <.link patch={~p"/donor/requests"} class="btn btn-sm btn-ghost w-full sm:w-auto">
           <.icon name="hero-arrow-path" class="size-4" /> Limpiar filtros
         </.link>
       </div>
@@ -68,7 +68,7 @@
           <div class="card bg-base-200 shadow-sm">
             <div class="card-body py-4 px-4">
               <!-- Header: Org + Título + Vence + Ayudar -->
-              <div class="flex justify-between items-start gap-4">
+              <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4">
                 <.link navigate={~p"/donor/requests/#{request}"} class="flex items-center gap-2 min-w-0 flex-1">
                   <%= if request.organization.image_path do %>
                     <img
@@ -81,13 +81,12 @@
                       <.icon name="hero-building-office" class="h-4 w-4 text-base-content/30" />
                     </div>
                   <% end %>
-                  <p class="text-lg truncate">
-                    <span class="font-bold">{request.organization.organization_name}</span>
-                    <span class="text-base-content/50"> - </span>
-                    <span class="text-base-content/70">{request.title}</span>
-                  </p>
+                  <div class="min-w-0">
+                    <p class="font-bold truncate">{request.organization.organization_name}</p>
+                    <p class="text-base-content/70 truncate text-sm">{request.title}</p>
+                  </div>
                 </.link>
-                <div class="flex items-center gap-3 shrink-0">
+                <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0">
                   <span class="text-sm text-base-content/60">
                     {days_until_deadline(request.deadline)}
                   </span>
@@ -163,7 +162,7 @@
 <!-- Donation Modal -->
 <%= if @show_modal && @selected_request do %>
   <div class="modal modal-open">
-    <div class="modal-box">
+    <div class="modal-box w-11/12 max-w-md">
       <h3 class="font-bold text-lg mb-4">Quiero ayudar</h3>
       
 <!-- Payment info -->

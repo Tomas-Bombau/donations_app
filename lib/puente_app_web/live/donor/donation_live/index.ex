@@ -4,6 +4,9 @@ defmodule PuenteAppWeb.Donor.DonationLive.Index do
   alias PuenteApp.Donations
   alias PuenteApp.Requests
 
+  import PuenteAppWeb.Helpers.FormatHelpers,
+    only: [format_currency: 1, format_date: 1, request_status_badge: 1, request_status_label: 1]
+
   @per_page 5
 
   @impl true
@@ -39,40 +42,11 @@ defmodule PuenteAppWeb.Donor.DonationLive.Index do
     {:noreply, assign(socket, show_closure: false, closure_request: nil)}
   end
 
-  def build_pagination_path(page) do
+  defp build_pagination_path(page) do
     if page == 1 do
       ~p"/donor/donations"
     else
       "/donor/donations?" <> URI.encode_query(%{page: page})
-    end
-  end
-
-  defp format_currency(amount) do
-    amount
-    |> Decimal.round(2)
-    |> Decimal.to_string()
-    |> then(&"$#{&1}")
-  end
-
-  defp format_date(datetime) do
-    Calendar.strftime(datetime, "%d/%m/%Y")
-  end
-
-  defp request_status_badge(status) do
-    case status do
-      :draft -> "badge-ghost"
-      :active -> "badge-warning"
-      :completed -> "badge-error"
-      :closed -> "badge-success"
-    end
-  end
-
-  defp request_status_label(status) do
-    case status do
-      :draft -> "Borrador"
-      :active -> "En curso"
-      :completed -> "Pendiente de rendicion"
-      :closed -> "Rendicion disponible"
     end
   end
 end

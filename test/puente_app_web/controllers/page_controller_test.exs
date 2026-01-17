@@ -3,6 +3,6 @@ defmodule PuenteAppWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")
-    assert html_response(conn, 200) =~ "Transforma vidas"
+    assert html_response(conn, 200) =~ "Quiero ayudar"
   end
 end

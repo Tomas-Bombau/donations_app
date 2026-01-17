@@ -4,6 +4,8 @@ defmodule PuenteAppWeb.Organization.RequestLive.Close do
   alias PuenteApp.Requests
   alias PuenteAppWeb.Helpers.UploadHelpers
 
+  import PuenteAppWeb.Helpers.FormatHelpers, only: [format_currency: 1]
+
   @impl true
   def mount(%{"id" => id}, _session, socket) do
     request = Requests.get_request_for_organization!(id, socket.assigns.organization.id)
@@ -82,13 +84,6 @@ defmodule PuenteAppWeb.Organization.RequestLive.Close do
       {:error, _reason} ->
         {:noreply, put_flash(socket, :error, "Error al publicar la rendicion.")}
     end
-  end
-
-  defp format_currency(amount) do
-    amount
-    |> Decimal.round(2)
-    |> Decimal.to_string()
-    |> then(&"$#{&1}")
   end
 
   defp error_to_string(:too_large), do: "Archivo muy grande (max 5MB)"

@@ -32,16 +32,16 @@
     
 <!-- Filters -->
     <form phx-change="filter" class="mb-6">
-      <div class="flex flex-wrap gap-3 items-center">
+      <div class="flex flex-wrap gap-2 sm:gap-3 items-center">
         <input
           type="text"
           name="search"
           value={@filters["search"]}
           placeholder="Buscar por nombre..."
-          class="input input-bordered input-sm w-56"
+          class="input input-bordered input-sm w-full sm:w-56"
           phx-debounce="300"
         />
-        <select name="province" class="select select-bordered select-sm w-44">
+        <select name="province" class="select select-bordered select-sm w-full sm:w-44">
           <option
             value=""
             disabled={@filters["province"] != ""}
@@ -56,7 +56,7 @@
         </select>
 
         <%= if @filters["province"] == "Buenos Aires" do %>
-          <select name="municipality" class="select select-bordered select-sm w-52">
+          <select name="municipality" class="select select-bordered select-sm w-full sm:w-52">
             <option
               value=""
               disabled={@filters["municipality"] != ""}
@@ -160,7 +160,7 @@
           </select>
         <% end %>
 
-        <select name="has_legal_entity" class="select select-bordered select-sm w-44">
+        <select name="has_legal_entity" class="select select-bordered select-sm w-full sm:w-44">
           <option
             value=""
             disabled={@filters["has_legal_entity"] != ""}
@@ -176,9 +176,9 @@
           </option>
         </select>
 
-        <div class="flex-1"></div>
+        <div class="hidden sm:flex flex-1"></div>
 
-        <button type="button" phx-click="clear_filters" class="btn btn-sm btn-ghost">
+        <button type="button" phx-click="clear_filters" class="btn btn-sm btn-ghost w-full sm:w-auto">
           Limpiar filtros
         </button>
       </div>
@@ -203,7 +203,7 @@
         <%= for org <- @organizations do %>
           <div class="card bg-base-200 shadow-sm hover:bg-base-300 transition-colors">
             <div class="card-body py-3 px-4">
-              <div class="flex justify-between items-center gap-4">
+              <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
                 <.link
                   navigate={~p"/admin/organizations/#{org}"}
                   class="flex-1 min-w-0 cursor-pointer flex gap-3 items-center"
@@ -223,25 +223,25 @@
                           else: "Sin nombre"}
                       </h3>
                     </div>
-                    <div class="text-sm text-base-content/60 mt-1">
-                    <span>{org.first_name} {org.last_name}</span>
-                    <span class="mx-1">·</span>
-                    <span>{org.email}</span>
-                    <%= if org.organization do %>
-                      <span class="mx-1">·</span>
-                      <span>
-                        {org.organization.province}{if org.organization.municipality,
-                          do: ", #{org.organization.municipality}",
-                          else: ""}
-                      </span>
-                    <% end %>
+                    <div class="text-sm text-base-content/60 mt-1 flex flex-wrap gap-x-1">
+                      <span>{org.first_name} {org.last_name}</span>
+                      <span class="hidden sm:inline">·</span>
+                      <span class="hidden sm:inline">{org.email}</span>
+                      <%= if org.organization do %>
+                        <span class="hidden sm:inline">·</span>
+                        <span class="hidden sm:inline">
+                          {org.organization.province}{if org.organization.municipality,
+                            do: ", #{org.organization.municipality}",
+                            else: ""}
+                        </span>
+                      <% end %>
                     </div>
                   </div>
                 </.link>
                 <div class="flex gap-2 shrink-0">
                   <.link
                     navigate={~p"/admin/organizations/#{org}/edit"}
-                    class="btn btn-ghost btn-sm"
+                    class="btn btn-ghost btn-sm flex-1 sm:flex-none"
                   >
                     <.icon name="hero-pencil-square" class="size-4" /> Editar
                   </.link>
@@ -251,7 +251,7 @@
                       phx-click="approve"
                       phx-value-id={org.id}
                       data-confirm="Estas seguro de aprobar esta organizacion?"
-                      class="btn btn-success btn-sm"
+                      class="btn btn-success btn-sm flex-1 sm:flex-none"
                     >
                       <.icon name="hero-check" class="size-4" /> Aprobar
                     </button>

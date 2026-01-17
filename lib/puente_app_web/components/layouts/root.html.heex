@@ -52,7 +52,7 @@
           </.link>
         <% end %>
       </div>
-      <div class="navbar-end flex items-center gap-4">
+      <div class="navbar-end flex items-center gap-2 sm:gap-4">
         <Layouts.theme_toggle />
         <%= if @current_scope do %>
           <div class="dropdown dropdown-end">
@@ -74,7 +74,7 @@
                   </div>
               <% end %>
             </div>
-            <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+            <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-48 sm:w-52 p-2 shadow">
               <li class="menu-title">
                 <span><%= @current_scope.user.first_name %> <%= @current_scope.user.last_name %></span>
               </li>
@@ -109,10 +109,31 @@
             </ul>
           </div>
         <% else %>
-          <.link href={~p"/users/log-in"} class="btn btn-ghost btn-sm">
+          <!-- Mobile: Hamburger menu -->
+          <div class="dropdown dropdown-end sm:hidden">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+              <.icon name="hero-bars-3" class="h-6 w-6" />
+            </div>
+            <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-48 p-2 shadow">
+              <li>
+                <.link href={~p"/users/log-in"}>
+                  <.icon name="hero-arrow-right-on-rectangle" class="h-4 w-4" />
+                  Iniciar sesion
+                </.link>
+              </li>
+              <li>
+                <.link href={~p"/users/register"}>
+                  <.icon name="hero-user-plus" class="h-4 w-4" />
+                  Registrarse
+                </.link>
+              </li>
+            </ul>
+          </div>
+          <!-- Desktop: Buttons -->
+          <.link href={~p"/users/log-in"} class="btn btn-ghost btn-sm hidden sm:flex">
             Iniciar sesion
           </.link>
-          <.link href={~p"/users/register"} class="btn btn-primary btn-sm">
+          <.link href={~p"/users/register"} class="btn btn-primary btn-sm hidden sm:flex">
             Registrarse
           </.link>
         <% end %>

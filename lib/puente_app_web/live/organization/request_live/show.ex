@@ -3,6 +3,8 @@ defmodule PuenteAppWeb.Organization.RequestLive.Show do
 
   alias PuenteApp.Requests
 
+  import PuenteAppWeb.Helpers.FormatHelpers
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket}
@@ -69,32 +71,4 @@ defmodule PuenteAppWeb.Organization.RequestLive.Show do
     end
   end
 
-  defp status_badge(status) do
-    case status do
-      :draft -> "badge-warning"
-      :active -> "badge-success"
-      :completed -> "badge-error"
-      :closed -> "badge-info"
-    end
-  end
-
-  defp status_label(status) do
-    case status do
-      :draft -> "Borrador"
-      :active -> "Activo"
-      :completed -> "Finalizado"
-      :closed -> "Cerrado"
-    end
-  end
-
-  defp format_currency(amount) do
-    amount
-    |> Decimal.round(2)
-    |> Decimal.to_string()
-    |> then(&"$#{&1}")
-  end
-
-  defp format_date(date) do
-    Calendar.strftime(date, "%d/%m/%Y")
-  end
 end

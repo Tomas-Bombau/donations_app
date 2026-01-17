@@ -5,6 +5,8 @@ defmodule PuenteAppWeb.Admin.OrganizationLive.Edit do
   alias PuenteApp.Organizations.Organization
   alias PuenteAppWeb.Helpers.UploadHelpers
 
+  import PuenteAppWeb.Helpers.FormatHelpers, only: [error_to_string: 1]
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
@@ -169,11 +171,6 @@ defmodule PuenteAppWeb.Admin.OrganizationLive.Edit do
         org_params
     end
   end
-
-  defp error_to_string(:too_large), do: "El archivo es muy grande (max 5MB)"
-  defp error_to_string(:not_accepted), do: "Tipo de archivo no permitido. Solo JPG, PNG o WebP"
-  defp error_to_string(:too_many_files), do: "Solo se permite un archivo"
-  defp error_to_string(_), do: "Error al subir el archivo"
 
   defp format_changeset_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
