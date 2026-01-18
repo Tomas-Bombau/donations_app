@@ -14,7 +14,8 @@ defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
     # USERS
     # ============================================
     create table(:users, primary_key: false) do
-      add :id, :uuid, primary_key: true      add :email, :citext, null: false
+      add :id, :uuid, primary_key: true
+      add :email, :citext, null: false
       add :first_name, :string, null: false
       add :last_name, :string, null: false
       add :phone, :string
@@ -39,7 +40,8 @@ defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
     # USERS TOKENS
     # ============================================
     create table(:users_tokens, primary_key: false) do
-      add :id, :uuid, primary_key: true      add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
+      add :id, :uuid, primary_key: true
+      add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
       add :token, :binary, null: false
       add :context, :string, null: false
       add :sent_to, :string
@@ -55,7 +57,8 @@ defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
     # ORGANIZATIONS
     # ============================================
     create table(:organizations, primary_key: false) do
-      add :id, :uuid, primary_key: true      add :organization_role, :string, null: false
+      add :id, :uuid, primary_key: true
+      add :organization_role, :string, null: false
       add :organization_name, :string, null: false
       add :address, :string
       add :province, :string
@@ -85,7 +88,8 @@ defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
     # CATEGORIES
     # ============================================
     create table(:categories, primary_key: false) do
-      add :id, :uuid, primary_key: true      add :name, :string, null: false
+      add :id, :uuid, primary_key: true
+      add :name, :string, null: false
       add :description, :string
       add :active, :boolean, default: true
 
@@ -99,7 +103,8 @@ defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
     # REQUESTS
     # ============================================
     create table(:requests, primary_key: false) do
-      add :id, :uuid, primary_key: true      add :organization_id, references(:organizations, type: :uuid, on_delete: :delete_all), null: false
+      add :id, :uuid, primary_key: true
+      add :organization_id, references(:organizations, type: :uuid, on_delete: :delete_all), null: false
       add :category_id, references(:categories, type: :uuid, on_delete: :restrict), null: false
       add :title, :string, null: false
       add :description, :text, null: false
@@ -130,7 +135,8 @@ defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
     # DONATIONS
     # ============================================
     create table(:donations, primary_key: false) do
-      add :id, :uuid, primary_key: true      add :donor_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
+      add :id, :uuid, primary_key: true
+      add :donor_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
       add :request_id, references(:requests, type: :uuid, on_delete: :restrict), null: false
       add :amount, :decimal, null: false, precision: 12, scale: 2
 
