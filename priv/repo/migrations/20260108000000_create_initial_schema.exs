@@ -4,7 +4,7 @@ defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
   def change do
     # Extensions
     execute "CREATE EXTENSION IF NOT EXISTS citext", ""
-    execute "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"", ""
+    # uuid-ossp not needed - using gen_random_uuid() which is built into PostgreSQL 13+
 
     # Enum types
     execute "CREATE TYPE user_role AS ENUM ('donor', 'organization', 'super_admin')", "DROP TYPE user_role"
@@ -14,7 +14,7 @@ defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
     # USERS
     # ============================================
     create table(:users, primary_key: false) do
-      add :id, :uuid, primary_key: true, default: fragment("uuid_generate_v4()")
+      add :id, :uuid, primary_key: true, default: fragment("gen_random_uuid()")
       add :email, :citext, null: false
       add :first_name, :string, null: false
       add :last_name, :string, null: false
@@ -40,7 +40,7 @@ defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
     # USERS TOKENS
     # ============================================
     create table(:users_tokens, primary_key: false) do
-      add :id, :uuid, primary_key: true, default: fragment("uuid_generate_v4()")
+      add :id, :uuid, primary_key: true, default: fragment("gen_random_uuid()")
       add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
       add :token, :binary, null: false
       add :context, :string, null: false
@@ -57,7 +57,7 @@ defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
     # ORGANIZATIONS
     # ============================================
     create table(:organizations, primary_key: false) do
-      add :id, :uuid, primary_key: true, default: fragment("uuid_generate_v4()")
+      add :id, :uuid, primary_key: true, default: fragment("gen_random_uuid()")
       add :organization_role, :string, null: false
       add :organization_name, :string, null: false
       add :address, :string
@@ -88,7 +88,7 @@ defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
     # CATEGORIES
     # ============================================
     create table(:categories, primary_key: false) do
-      add :id, :uuid, primary_key: true, default: fragment("uuid_generate_v4()")
+      add :id, :uuid, primary_key: true, default: fragment("gen_random_uuid()")
       add :name, :string, null: false
       add :description, :string
       add :active, :boolean, default: true
@@ -103,7 +103,7 @@ defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
     # REQUESTS
     # ============================================
     create table(:requests, primary_key: false) do
-      add :id, :uuid, primary_key: true, default: fragment("uuid_generate_v4()")
+      add :id, :uuid, primary_key: true, default: fragment("gen_random_uuid()")
       add :organization_id, references(:organizations, type: :uuid, on_delete: :delete_all), null: false
       add :category_id, references(:categories, type: :uuid, on_delete: :restrict), null: false
       add :title, :string, null: false
@@ -135,7 +135,7 @@ defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
     # DONATIONS
     # ============================================
     create table(:donations, primary_key: false) do
-      add :id, :uuid, primary_key: true, default: fragment("uuid_generate_v4()")
+      add :id, :uuid, primary_key: true, default: fragment("gen_random_uuid()")
       add :donor_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
       add :request_id, references(:requests, type: :uuid, on_delete: :restrict), null: false
       add :amount, :decimal, null: false, precision: 12, scale: 2
