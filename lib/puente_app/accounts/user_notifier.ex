@@ -122,9 +122,66 @@ defmodule PuenteApp.Accounts.UserNotifier do
   end
 
   @doc """
+  Deliver notification that an organization has been approved.
+  """
+  def deliver_organization_approved(user) do
+    name = user.first_name || user.email
+
+    text_body = """
+    Hola #{name},
+
+    ¡Excelentes noticias! Tu organizacion ha sido aprobada en PuenteApp.
+
+    Ya podes comenzar a crear solicitudes de donaciones y conectar con donantes.
+
+    Ingresa a tu cuenta para empezar: https://negligible-verifiable-kinkajou.gigalixirapp.com/users/log-in
+
+    ¡Gracias por ser parte de PuenteApp!
+
+    - El equipo de PuenteApp
+    """
+
+    html_content = """
+    <h2 style="margin: 0 0 20px 0; font-size: 24px; font-weight: 600; color: #111827;">
+      ¡Tu organizacion fue aprobada!
+    </h2>
+    <p style="margin: 0 0 15px 0; font-size: 16px; line-height: 1.6; color: #374151;">
+      Hola <strong>#{name}</strong>,
+    </p>
+    <p style="margin: 0 0 25px 0; font-size: 16px; line-height: 1.6; color: #374151;">
+      ¡Excelentes noticias! Tu organizacion ha sido aprobada en PuenteApp. Ya podes comenzar a crear solicitudes de donaciones y conectar con donantes.
+    </p>
+    <table role="presentation" style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <td align="center" style="padding: 10px 0 30px 0;">
+          <a href="https://negligible-verifiable-kinkajou.gigalixirapp.com/users/log-in" style="display: inline-block; padding: 14px 32px; background-color: #7c3aed; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 600; border-radius: 8px;">
+            Ingresar a mi cuenta
+          </a>
+        </td>
+      </tr>
+    </table>
+    <div style="padding: 15px; background-color: #d1fae5; border-radius: 8px; border-left: 4px solid #10b981;">
+      <p style="margin: 0; font-size: 14px; color: #065f46;">
+        <strong>Proximo paso:</strong> Crea tu primera solicitud de donacion desde el panel de tu organizacion.
+      </p>
+    </div>
+    """
+
+    deliver(user.email, "¡Tu organizacion fue aprobada en PuenteApp!", text_body, base_layout(html_content))
+  end
+
+  @doc """
   Deliver email confirmation instructions.
+  Different templates for donors and organizations.
   """
   def deliver_confirmation_instructions(user, url) do
+    case user.role do
+      :organization -> deliver_organization_confirmation(user, url)
+      _ -> deliver_donor_confirmation(user, url)
+    end
+  end
+
+  defp deliver_donor_confirmation(user, url) do
     name = user.first_name || user.email
 
     text_body = """
@@ -176,5 +233,68 @@ defmodule PuenteApp.Accounts.UserNotifier do
     """
 
     deliver(user.email, "Confirmá tu cuenta en PuenteApp", text_body, base_layout(html_content))
+  end
+
+  defp deliver_organization_confirmation(user, url) do
+    name = user.first_name || user.email
+
+    text_body = """
+    Hola #{name},
+
+    ¡Gracias por registrar tu organizacion en PuenteApp!
+
+    Primero, confirmá tu email visitando el siguiente link:
+
+    #{url}
+
+    Este link expira en 48 horas.
+
+    IMPORTANTE: Despues de confirmar tu email, el equipo de Puente revisara tu solicitud
+    y se pondra en contacto contigo para darte acceso a la plataforma.
+    Este proceso puede tomar unos dias.
+
+    Si no creaste una cuenta, ignorá este email.
+
+    - El equipo de PuenteApp
+    """
+
+    html_content = """
+    <h2 style="margin: 0 0 20px 0; font-size: 24px; font-weight: 600; color: #111827;">
+      ¡Gracias por registrar tu organizacion!
+    </h2>
+    <p style="margin: 0 0 15px 0; font-size: 16px; line-height: 1.6; color: #374151;">
+      Hola <strong>#{name}</strong>,
+    </p>
+    <p style="margin: 0 0 25px 0; font-size: 16px; line-height: 1.6; color: #374151;">
+      Gracias por registrar tu organizacion en PuenteApp. El primer paso es confirmar tu email haciendo click en el botón de abajo.
+    </p>
+    <table role="presentation" style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <td align="center" style="padding: 10px 0 30px 0;">
+          <a href="#{url}" style="display: inline-block; padding: 14px 32px; background-color: #7c3aed; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 600; border-radius: 8px;">
+            Confirmar mi email
+          </a>
+        </td>
+      </tr>
+    </table>
+    <p style="margin: 0 0 10px 0; font-size: 14px; color: #6b7280;">
+      O copiá y pegá este link en tu navegador:
+    </p>
+    <p style="margin: 0 0 20px 0; font-size: 14px; color: #7c3aed; word-break: break-all;">
+      #{url}
+    </p>
+    <div style="padding: 15px; background-color: #dbeafe; border-radius: 8px; border-left: 4px solid #3b82f6; margin-bottom: 15px;">
+      <p style="margin: 0; font-size: 14px; color: #1e40af;">
+        <strong>Proximo paso:</strong> Despues de confirmar tu email, el equipo de Puente revisara tu solicitud y se pondra en contacto contigo para darte acceso a la plataforma. Este proceso puede tomar unos dias.
+      </p>
+    </div>
+    <div style="padding: 15px; background-color: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
+      <p style="margin: 0; font-size: 14px; color: #92400e;">
+        <strong>Importante:</strong> Este link expira en 48 horas.
+      </p>
+    </div>
+    """
+
+    deliver(user.email, "Confirmá el email de tu organizacion - PuenteApp", text_body, base_layout(html_content))
   end
 end

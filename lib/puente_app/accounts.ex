@@ -562,11 +562,18 @@ defmodule PuenteApp.Accounts do
   @doc """
   Approves an organization user by admin.
   Returns {:error, :invalid_role} if user is not an organization.
+  Sends an email notification to the organization.
   """
   def approve_user(%User{role: :organization} = user) do
-    user
-    |> User.admin_approve_changeset()
-    |> Repo.update()
+    case user |> User.admin_approve_changeset() |> Repo.update() do
+      {:ok, approved_user} ->
+        # Send approval notification email
+        UserNotifier.deliver_organization_approved(approved_user)
+        {:ok, approved_user}
+
+      error ->
+        error
+    end
   end
 
   def approve_user(%User{}), do: {:error, :invalid_role}
