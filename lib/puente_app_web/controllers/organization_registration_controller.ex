@@ -32,11 +32,17 @@ defmodule PuenteAppWeb.OrganizationRegistrationController do
       end
     end)
     |> case do
-      {:ok, _user} ->
+      {:ok, user} ->
+        # Send confirmation email
+        Accounts.deliver_confirmation_instructions(
+          user,
+          &url(~p"/users/confirm/#{&1}")
+        )
+
         conn
         |> put_flash(
           :info,
-          "Tu solicitud fue enviada. Un administrador revisara tu cuenta y te notificaremos por email cuando sea aprobada."
+          "Te enviamos un email de confirmacion. Por favor revisa tu casilla de correo."
         )
         |> redirect(to: ~p"/")
 
