@@ -4,7 +4,7 @@ defmodule PuenteApp.Repo.Migrations.CreateInitialSchema do
   def change do
     # Extensions
     execute "CREATE EXTENSION IF NOT EXISTS citext", ""
-    # uuid-ossp not needed - using gen_random_uuid() which is built into PostgreSQL 13+
+    execute "CREATE EXTENSION IF NOT EXISTS pgcrypto", ""
 
     # Enum types
     execute "CREATE TYPE user_role AS ENUM ('donor', 'organization', 'super_admin')", "DROP TYPE user_role"
